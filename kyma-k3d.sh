@@ -1,4 +1,5 @@
 SECONDS=0
+
 # Create Kyma cluster
 k3d create --publish 80:80 --publish 443:443 --enable-registry --registry-volume local_registry --registry-name registry.localhost --server-arg --no-deploy --server-arg traefik -n kyma -t 60 
 
@@ -35,7 +36,7 @@ kubectl apply -f cert-manager.yaml &
 kubectl -n kube-system patch cm coredns --patch "$(cat coredns-patch.yaml)" &
 helm upgrade -i istio resources/istio -n istio-system --set $OVERRIDES &
 
-while [[ $(kubectl get pods -n istio-system -l istio=sidecar-injector -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for istio" && sleep 5; done
+while [[ $(kubectl get pods -n istio-system -l istio=sidecar-injector -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for Istio sidecar-injector, elapsed time: $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"; sleep 10; done
 echo "Istio installed in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
 
 helm upgrade -i ingress-dns-cert ingress-dns-cert --set $OVERRIDES -n istio-system & 
@@ -66,12 +67,11 @@ helm upgrade -i knative-provisioner-natss resources/knative-provisioner-natss -n
 helm upgrade -i nats-streaming resources/nats-streaming -n natss &
 helm upgrade -i event-sources resources/event-sources -n kyma-system &
 
-
 # Create installer deployment scaled to 0 to get console running:
 kubectl apply -f installer-local.yaml &
 
 # Wait for jobs - helm commands executed in the background
-while (( (( JOBS_COUNT=$(jobs -p | wc -l) )) > 0 )); do echo "waiting for $JOBS_COUNT helm commands executed in the background:" && sleep 10; done
+while (( (( JOBS_COUNT=$(jobs -p | wc -l) )) > 0 )); do echo "Waiting for $JOBS_COUNT command(s) executed in the background, elapsed time: $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"; jobs >/dev/null ; sleep 10; done
 
 echo "##############################################################################"
 echo "# Kyma cluster created in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
