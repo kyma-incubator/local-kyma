@@ -1,10 +1,10 @@
-
+SECONDS=0
 # Create Kyma cluster
 k3d create --publish 80:80 --publish 443:443 --enable-registry --registry-volume local_registry --registry-name registry.localhost --server-arg --no-deploy --server-arg traefik -n kyma -t 60 
 
 # Delete cluster with keep-registry-volume to cache docker images
 # k3d delete --keep-registry-volume -n kyma
-
+echo "Cluster created in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
 export KUBECONFIG="$(k3d get-kubeconfig -n='kyma')"
 export DOMAIN=local.kyma.pro
 export GARDENER=false
@@ -36,6 +36,7 @@ kubectl -n kube-system patch cm coredns --patch "$(cat coredns-patch.yaml)" &
 helm upgrade -i istio resources/istio -n istio-system --set $OVERRIDES &
 
 while [[ $(kubectl get pods -n istio-system -l istio=sidecar-injector -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for istio" && sleep 5; done
+echo "Istio installed in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
 
 helm upgrade -i ingress-dns-cert ingress-dns-cert --set $OVERRIDES -n istio-system & 
 helm upgrade -i istio-kyma-patch resources/istio-kyma-patch -n istio-system --set $OVERRIDES &
@@ -70,8 +71,13 @@ helm upgrade -i event-sources resources/event-sources -n kyma-system &
 kubectl apply -f installer-local.yaml &
 
 # Wait for jobs - helm commands executed in the background
-while (( (( JOBS_COUNT=$(jobs -p | wc -l) )) > 0 )); do echo "waiting for $JOBS_COUNT helm commands executed in the background:"&& jobs && sleep 5; done
+while (( (( JOBS_COUNT=$(jobs -p | wc -l) )) > 0 )); do echo "waiting for $JOBS_COUNT helm commands executed in the background:" && sleep 10; done
 
+echo "##############################################################################"
+echo "# Kyma cluster created in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
+echo "##############################################################################"
+echo
+echo "Genereated self signed TLS certificate is about to be added to your keychain (admin pass is required)"
 # Download the certificate: 
 kubectl get secret kyma-gateway-certs -n istio-system -o jsonpath='{.data.tls\.crt}' | base64 --decode > kyma.crt
 # Import the certificate: 
