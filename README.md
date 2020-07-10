@@ -5,8 +5,7 @@
 
 # Quick start
 
-Checkout this repository and 
-
+Checkout this repository and go to the main folder:
 ```
 git clone git@github.com:kyma-incubator/local-kyma-k3d.git
 cd local-kyma-k3d
@@ -27,7 +26,7 @@ Use credentials to log into [Kyma Console](https://console.local.kyma.pro)
 
 Your cluster is ready!
 
-![asciicast](local-kyma-k3d.gif)]
+![asciicast](local-kyma-k3d.gif)
 
 # Clean up
 
@@ -37,4 +36,5 @@ k3d delete -n kyma
 
 # Notes
 The script works only on Mac OS. You need docker configured with 4 CPU and 8GB RAM to run it smoothly.
+
 
