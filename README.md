@@ -27,7 +27,7 @@ Use credentials to log into [Kyma Console](https://console.local.kyma.pro)
 
 Your cluster is ready!
 
-[![asciicast](https://asciinema.org/a/346654.svg)](https://asciinema.org/a/346654?autoplay=1)
+![asciicast](local-kyma-k3d.gif)]
 
 # Clean up
 
