@@ -7,7 +7,7 @@ k3d create --publish 80:80 --publish 443:443 --enable-registry --registry-volume
 # k3d delete --keep-registry-volume -n kyma
 echo "Cluster created in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
 export KUBECONFIG="$(k3d get-kubeconfig -n='kyma')"
-export DOMAIN=local.kyma.pro
+export DOMAIN=local.kyma.dev
 export GARDENER=false
 export OVERRIDES=global.isLocalEnv=true,global.ingress.domainName=$DOMAIN,global.environment.gardener=$GARDENER,global.domainName=$DOMAIN,global.minikubeIP=127.0.0.1,global.tlsCrt=ZHVtbXkK
 export ORY=global.ory.hydra.persistence.enabled=false,global.ory.hydra.persistence.postgresql.enabled=false,hydra.hydra.autoMigrate=false

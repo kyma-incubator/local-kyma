@@ -1,7 +1,7 @@
 # Prerequisites
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [helm 3](https://helm.sh/docs/intro/quickstart/#install-helm)
-- [k3d](https://github.com/rancher/k3d) - you can install it with the command: `curl -s https://raw.githubusercontent.com/rancher/k3d/master/install.sh | bash`
+- [k3d](https://github.com/rancher/k3d) - you can install it with the command: `brew install k3d` or `curl -s https://raw.githubusercontent.com/rancher/k3d/master/install.sh | bash`
 
 # Quick start
 
@@ -22,7 +22,7 @@ Start k3s cluster and Kyma:
 ```
 
 At the end script asks for your password to add TLS certificate to your key chain. 
-Use credentials to log into [Kyma Console](https://console.local.kyma.pro)
+Use credentials to log into [Kyma Console](https://console.local.kyma.dev)
 
 Your cluster is ready!
 
