@@ -24,6 +24,9 @@ Start k3s cluster and Kyma:
 At the end script asks for your password to add TLS certificate to your key chain. 
 Use credentials to log into [Kyma Console](https://console.local.kyma.dev)
 
+If you wan to use `kubectl` to connect to the cluster, you have to first `export KUBECONFIG="$(k3d get-kubeconfig -n='kyma')"`
+You can get the password for `admin@kyma.cx` in the future by running `kubectl get secret admin-user -n kyma-system -o jsonpath="{.data.password}" | base64 --decode`
+
 Your cluster is ready!
 
 ![asciicast](local-kyma-k3d.gif)
