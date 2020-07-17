@@ -1,7 +1,8 @@
 SECONDS=0
 
+# Wait until number of background jobs is less than $1, try every $2 second(s)
 function waitForJobs() {
-    while (( (( JOBS_COUNT=$(jobs -p | wc -l) )) > 0 )); do echo "Waiting for $JOBS_COUNT command(s) executed in the background, elapsed time: $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"; jobs >/dev/null ; sleep $1; done
+    while (( (( JOBS_COUNT=$(jobs -p | wc -l) )) > $1 )); do echo "Waiting for $JOBS_COUNT command(s) executed in the background, elapsed time: $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"; jobs >/dev/null ; sleep $2; done
 }
 
 # Create Kyma cluster
@@ -20,6 +21,13 @@ rm resources/core/charts/gateway/templates/kyma-gateway-certs.yaml
 # apiserver-proxy dependencies are not required (cannot be disabled by values yet):
 rm resources/apiserver-proxy/requirements.yaml
 rm -R resources/apiserver-proxy/charts
+
+# delete sync-job that restarts hydra and hydra-maester - save a minute or more
+rm resources/ory/charts/hydra/charts/hydra-maester/templates/sync-job.yaml
+rm resources/ory/templates/job-secret-migration.yaml
+
+# delete subscription migration job (not needed)
+rm resources/application-connector/charts/application-broker/templates/subscription-migration.yaml
 
 # Create namespaces
 kubectl create ns kyma-system
@@ -63,18 +71,25 @@ helm upgrade -i service-catalog resources/service-catalog --set $OVERRIDES -n ky
 helm upgrade -i service-catalog-addons resources/service-catalog-addons --set $OVERRIDES -n kyma-system &
 # helm upgrade -i helm-broker resources/helm-broker --set $OVERRIDES -n kyma-system &
 
+waitForJobs 5 5
+
 helm upgrade -i core resources/core --set $OVERRIDES -n kyma-system &
 helm upgrade -i console resources/console --set $OVERRIDES -n kyma-system &
 helm upgrade -i cluster-users resources/cluster-users --set $OVERRIDES -n kyma-system &
 helm upgrade -i apiserver-proxy resources/apiserver-proxy --set $OVERRIDES -n kyma-system &
+
+waitForJobs 5 5
+
 helm upgrade -i serverless resources/serverless --set $LOCALREGISTRY -n kyma-system &
 helm upgrade -i logging resources/logging --set $OVERRIDES -n kyma-system &
-
-helm upgrade -i application-connector resources/application-connector --set $OVERRIDES -n kyma-integration &
 
 # Install knative-eventing and knative-serving
 helm upgrade -i knative-serving resources/knative-serving --set $OVERRIDES -n knative-serving &
 helm upgrade -i knative-eventing resources/knative-eventing -n knative-eventing &
+
+waitForJobs 5 5
+
+helm upgrade -i application-connector resources/application-connector --set $OVERRIDES -n kyma-integration &
 helm upgrade -i knative-provisioner-natss resources/knative-provisioner-natss -n knative-eventing &
 helm upgrade -i nats-streaming resources/nats-streaming -n natss &
 helm upgrade -i event-sources resources/event-sources -n kyma-system &
@@ -83,7 +98,7 @@ helm upgrade -i event-sources resources/event-sources -n kyma-system &
 kubectl apply -f installer-local.yaml &
 
 # Wait for jobs - helm commands executed in the background
-waitForJobs 10
+waitForJobs 0 5
 
 echo "##############################################################################"
 echo "# Kyma cluster created in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
