@@ -4,16 +4,28 @@ SECONDS=0
 function waitForJobs() {
     while (( (( JOBS_COUNT=$(jobs -p | wc -l) )) > $1 )); do echo "Waiting for $JOBS_COUNT command(s) executed in the background, elapsed time: $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"; jobs >/dev/null ; sleep $2; done
 }
+# Start docker Registry
+docker run -d \
+  -p 5000:5000 \
+  --restart=always \
+  --name k3d-registry \
+  -v $PWD/registry:/var/lib/registry \
+  registry:2
 
 # Create Kyma cluster
-k3d create --publish 80:80 --publish 443:443 --enable-registry --registry-volume local_registry --registry-name registry.localhost --server-arg --no-deploy --server-arg traefik -n kyma -t 60 
+k3d cluster create kyma \
+    --port 80:80@loadbalancer \
+    --port 443:443@loadbalancer \
+    --k3s-server-arg --no-deploy \
+    --k3s-server-arg traefik \
+    --timeout 60s 
 
 
 
 # Delete cluster with keep-registry-volume to cache docker images
-# k3d delete --keep-registry-volume -n kyma
+# k3d cluster delete kyma
 echo "Cluster created in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
-KUBECONFIG="$(k3d get-kubeconfig -n='kyma')"
+KUBECONFIG="$(k3d kubeconfig get kyma)"
 
 # This file will be created by cert-manager (not needed anymore):
 rm resources/core/charts/gateway/templates/kyma-gateway-certs.yaml

@@ -34,7 +34,8 @@ Your cluster is ready!
 # Clean up
 
 ```
-k3d delete -n kyma
+k3d cluster delete kyma
+docker rm -f  k3d-registry
 ```
 
 # Notes
