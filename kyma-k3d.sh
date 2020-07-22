@@ -49,11 +49,13 @@ kubectl apply -f cert-manager.yaml &
 REGISTRY_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' /k3d-registry)
 sed "s/REGISTRY_IP/$REGISTRY_IP/" coredns-patch.tpl >coredns-patch.yaml
 kubectl -n kube-system patch cm coredns --patch "$(cat coredns-patch.yaml)" &
+
 helm upgrade -i istio resources/istio --set global.isLocalEnv=true -n istio-system &
 
 while [[ $(kubectl get pods -n istio-system -l istio=sidecar-injector -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for Istio sidecar-injector, elapsed time: $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"; sleep 10; done
 echo "Istio installed in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
 
+# Set environment variables with chart values (overrides)
 DOMAIN=local.kyma.dev
 OVERRIDES=global.isLocalEnv=false,global.ingress.domainName=$DOMAIN,global.environment.gardener=false,global.domainName=$DOMAIN,global.tlsCrt=ZHVtbXkK
 ORY=global.ory.hydra.persistence.enabled=false,global.ory.hydra.persistence.postgresql.enabled=false,hydra.hydra.autoMigrate=false
@@ -114,3 +116,4 @@ echo 'Kyma Console Url:'
 echo `kubectl get virtualservice console-web -n kyma-system -o jsonpath='{ .spec.hosts[0] }'`
 echo 'User admin@kyma.cx, password:'
 echo `kubectl get secret admin-user -n kyma-system -o jsonpath="{.data.password}" | base64 --decode`
+ 
