@@ -9,11 +9,10 @@ function waitForJobs() {
 k3d create --publish 80:80 --publish 443:443 --enable-registry --registry-volume local_registry --registry-name registry.localhost --server-arg --no-deploy --server-arg traefik -n kyma -t 60 
 
 
-
 # Delete cluster with keep-registry-volume to cache docker images
 # k3d delete --keep-registry-volume -n kyma
 echo "Cluster created in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
-KUBECONFIG="$(k3d get-kubeconfig -n='kyma')"
+export KUBECONFIG="$(k3d get-kubeconfig -n='kyma')"
 
 # This file will be created by cert-manager (not needed anymore):
 rm resources/core/charts/gateway/templates/kyma-gateway-certs.yaml
@@ -28,6 +27,11 @@ rm resources/ory/templates/job-secret-migration.yaml
 
 # delete subscription migration job (not needed)
 rm resources/application-connector/charts/application-broker/templates/subscription-migration.yaml
+
+# Delete ugly NOTES.txt to have cleaner output
+rm rm resources/dex/templates/NOTES.txt 
+rm resources/core/templates/NOTES.txt
+rm resources/istio-kyma-patch/templates/NOTES.txt
 
 # Create namespaces
 kubectl create ns kyma-system
@@ -46,7 +50,7 @@ helm upgrade -i testing resources/testing -n kyma-system &
 kubectl apply -f cert-manager.yaml &
 
 # Patch CoreDNS with entries for registry.localhost and *.local.kyma.dev
-REGISTRY_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' /k3d-registry)
+export REGISTRY_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' /k3d-registry)
 sed "s/REGISTRY_IP/$REGISTRY_IP/" coredns-patch.tpl >coredns-patch.yaml
 kubectl -n kube-system patch cm coredns --patch "$(cat coredns-patch.yaml)" &
 
@@ -56,10 +60,10 @@ while [[ $(kubectl get pods -n istio-system -l istio=sidecar-injector -o 'jsonpa
 echo "Istio installed in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
 
 # Set environment variables with chart values (overrides)
-DOMAIN=local.kyma.dev
-OVERRIDES=global.isLocalEnv=false,global.ingress.domainName=$DOMAIN,global.environment.gardener=false,global.domainName=$DOMAIN,global.tlsCrt=ZHVtbXkK
-ORY=global.ory.hydra.persistence.enabled=false,global.ory.hydra.persistence.postgresql.enabled=false,hydra.hydra.autoMigrate=false
-LOCALREGISTRY="dockerRegistry.enableInternal=false,dockerRegistry.serverAddress=registry.localhost:5000,dockerRegistry.registryAddress=registry.localhost:5000,global.ingress.domainName=$DOMAIN"
+export DOMAIN=local.kyma.dev
+export OVERRIDES=global.isLocalEnv=false,global.ingress.domainName=$DOMAIN,global.environment.gardener=false,global.domainName=$DOMAIN,global.tlsCrt=ZHVtbXkK
+export ORY=global.ory.hydra.persistence.enabled=false,global.ory.hydra.persistence.postgresql.enabled=false,hydra.hydra.autoMigrate=false
+export LOCALREGISTRY="dockerRegistry.enableInternal=false,dockerRegistry.serverAddress=registry.localhost:5000,dockerRegistry.registryAddress=registry.localhost:5000,global.ingress.domainName=$DOMAIN"
 
 helm upgrade -i ingress-dns-cert ingress-dns-cert --set $OVERRIDES -n istio-system & 
 helm upgrade -i istio-kyma-patch resources/istio-kyma-patch -n istio-system &
@@ -73,23 +77,15 @@ helm upgrade -i service-catalog resources/service-catalog --set $OVERRIDES -n ky
 helm upgrade -i service-catalog-addons resources/service-catalog-addons --set $OVERRIDES -n kyma-system &
 # helm upgrade -i helm-broker resources/helm-broker --set $OVERRIDES -n kyma-system &
 
-waitForJobs 5 5
-
 helm upgrade -i core resources/core --set $OVERRIDES -n kyma-system &
 helm upgrade -i console resources/console --set $OVERRIDES -n kyma-system &
 helm upgrade -i cluster-users resources/cluster-users --set $OVERRIDES -n kyma-system &
 helm upgrade -i apiserver-proxy resources/apiserver-proxy --set $OVERRIDES -n kyma-system &
-
-waitForJobs 5 5
-
 helm upgrade -i serverless resources/serverless --set $LOCALREGISTRY -n kyma-system &
 helm upgrade -i logging resources/logging --set $OVERRIDES -n kyma-system &
 
-# Install knative-eventing and knative-serving
 helm upgrade -i knative-serving resources/knative-serving --set $OVERRIDES -n knative-serving &
 helm upgrade -i knative-eventing resources/knative-eventing -n knative-eventing &
-
-waitForJobs 5 5
 
 helm upgrade -i application-connector resources/application-connector --set $OVERRIDES -n kyma-integration &
 helm upgrade -i knative-provisioner-natss resources/knative-provisioner-natss -n knative-eventing &
