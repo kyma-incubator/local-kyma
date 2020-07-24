@@ -4,11 +4,16 @@ SECONDS=0
 function waitForJobs() {
     while (( (( JOBS_COUNT=$(jobs -p | wc -l) )) > $1 )); do echo "Waiting for $JOBS_COUNT command(s) executed in the background, elapsed time: $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"; jobs >/dev/null ; sleep $2; done
 }
+
+# Create docker network
+docker network create k3d-kyma
+
 # Start docker Registry
 docker run -d \
   -p 5000:5000 \
   --restart=always \
   --name registry.localhost \
+  --network k3d-kyma \
   -v $PWD/registry:/var/lib/registry \
   registry:2
 
@@ -18,10 +23,9 @@ k3d cluster create kyma \
     --port 443:443@loadbalancer \
     --k3s-server-arg --no-deploy \
     --k3s-server-arg traefik \
+    --network k3d-kyma \
     --volume $PWD/registries.yaml:/etc/rancher/k3s/registries.yaml \
     --timeout 60s 
-
-docker network connect k3d-kyma registry.localhost
 
 # Delete cluster with keep-registry-volume to cache docker images
 # k3d cluster delete kyma
