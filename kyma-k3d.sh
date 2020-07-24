@@ -8,7 +8,8 @@ function waitForJobs() {
 docker run -d \
   -p 5000:5000 \
   --restart=always \
-  --name k3d-registry \
+  --name registry.localhost \
+  --network k3d-kyma \
   -v $PWD/registry:/var/lib/registry \
   registry:2
 
@@ -18,9 +19,10 @@ k3d cluster create kyma \
     --port 443:443@loadbalancer \
     --k3s-server-arg --no-deploy \
     --k3s-server-arg traefik \
+    --volume $PWD/registries.yaml:/etc/rancher/k3s/registries.yaml \
     --timeout 60s 
 
-
+docker network connect k3d-kyma registry.localhost
 
 # Delete cluster with keep-registry-volume to cache docker images
 # k3d cluster delete kyma
@@ -58,7 +60,7 @@ helm upgrade -i testing resources/testing -n kyma-system &
 kubectl apply -f cert-manager.yaml &
 
 # Patch CoreDNS with entries for registry.localhost and *.local.kyma.dev
-REGISTRY_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' /k3d-registry)
+REGISTRY_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' /registry.localhost)
 sed "s/REGISTRY_IP/$REGISTRY_IP/" coredns-patch.tpl >coredns-patch.yaml
 kubectl -n kube-system patch cm coredns --patch "$(cat coredns-patch.yaml)" &
 helm upgrade -i istio resources/istio --set global.isLocalEnv=true -n istio-system &
