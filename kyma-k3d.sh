@@ -40,13 +40,6 @@ rm resources/core/charts/gateway/templates/kyma-gateway-certs.yaml
 rm resources/apiserver-proxy/requirements.yaml
 rm -R resources/apiserver-proxy/charts
 
-# delete sync-job that restarts hydra and hydra-maester - save a minute or more
-rm resources/ory/charts/hydra/charts/hydra-maester/templates/sync-job.yaml
-rm resources/ory/templates/job-secret-migration.yaml
-
-# delete subscription migration job (not needed)
-rm resources/application-connector/charts/application-broker/templates/subscription-migration.yaml
-
 # Delete ugly NOTES.txt to have cleaner output
 rm resources/dex/templates/NOTES.txt 
 rm resources/core/templates/NOTES.txt
