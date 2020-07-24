@@ -28,7 +28,7 @@ docker network connect k3d-kyma registry.localhost
 # k3d cluster delete kyma
 echo "Cluster created in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
 
-export KUBECONFIG="$(k3d kubeconfig get kyma)"
+k3d kubeconfig merge kyma --switch-context
 
 # This file will be created by cert-manager (not needed anymore):
 rm resources/core/charts/gateway/templates/kyma-gateway-certs.yaml

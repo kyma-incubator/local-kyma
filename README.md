@@ -24,7 +24,7 @@ Start k3s cluster and Kyma:
 At the end script asks for your password to add TLS certificate to your key chain. 
 Use credentials to log into [Kyma Console](https://console.local.kyma.dev)
 
-If you wan to use `kubectl` to connect to the cluster, you have to first `export KUBECONFIG="$(k3d get-kubeconfig -n='kyma')"`
+If you wan to use `kubectl` to connect to the cluster, you have to first execute command `k3d kubeconfig merge kyma --switch-context`
 You can get the password for `admin@kyma.cx` in the future by running `kubectl get secret admin-user -n kyma-system -o jsonpath="{.data.password}" | base64 --decode`
 
 Your cluster is ready!
@@ -63,4 +63,4 @@ Currently, it doesn't work - not all pods can recover. See the [issue](https://g
 ---
 ## What to do if I get an error?
 
-Installation may fail, as the script is simple and doesn't have any retries implemented. Before you start over from scratch you can try to fix the failed component. First, find a failed helm release: `helm ls --all-namespaces`, then find the line in the kyma-k3d.sh script that is installing that component and execute it again. Remember to set the environment variables used in the command before you run the `helm upgrade` (usually KUBECONFIG, DOMAIN, OVERRIDES). If it doesn't work or the number of broken components is bigger you can start from scratch deleting the k3s cluster with `k3d delete -n kyma` first.
+Installation may fail, as the script is simple and doesn't have any retries implemented. Before you start over from scratch you can try to fix the failed component. First, find a failed helm release: `helm ls --all-namespaces`, then find the line in the kyma-k3d.sh script that is installing that component and execute it again. Remember to switch kubeconfig context and set the environment variables used in the command before you run the `helm upgrade` (usually DOMAIN, OVERRIDES). If it doesn't work or the number of broken components is bigger you can start from scratch deleting the k3s cluster with `kyma-k3d-delete.sh` first.
