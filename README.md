@@ -38,7 +38,29 @@ k3d cluster delete kyma
 docker rm -f  k3d-registry
 ```
 
-# Notes
-The script works only on Mac OS. You need docker configured with 4 CPU and 8GB RAM to run it smoothly.
+# FAQ
 
 
+## Can I use the script on Linux or Windows
+
+The script was tested only on Mac OS. It should not be a big problem to adapt it to Linux, but it wasn't tested there. There is a plan to move the script to Kyma CLI - once it is done all platforms will be supported.
+
+---
+## Why not minikube?
+
+K3S starts in about 10 seconds - you can use kubeconfig and access API server. It also takes fewer resources than minikube. For the local development, speed and low resource consumption are critical requirements.
+
+---
+## What are the hardware requirements to run Kyma locally?
+
+It was tested on MacBook Pro (i7, 4 core CPU, 16GB RAM). Docker was configured with 8GB RAM and 4 CPU. With such configuration, the installation takes about 5 minutes to complete.
+
+---
+## Can I stop and start k3s cluster?
+
+Currently, it doesn't work - not all pods can recover. See the [issue](https://github.com/kyma-incubator/local-kyma-k3d/issues/3). 
+
+---
+## What to do if I get an error?
+
+Installation may fail, as the script is simple and doesn't have any retries implemented. Before you start over from scratch you can try to fix the failed component. First, find a failed helm release: `helm ls --all-namespaces`, then find the line in the kyma-k3d.sh script that is installing that component and execute it again. Remember to set the environment variables used in the command before you run the `helm upgrade` (usually KUBECONFIG, DOMAIN, OVERRIDES). If it doesn't work or the number of broken components is bigger you can start from scratch deleting the k3s cluster with `k3d delete -n kyma` first.
