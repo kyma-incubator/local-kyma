@@ -4,15 +4,31 @@ SECONDS=0
 function waitForJobs() {
     while (( (( JOBS_COUNT=$(jobs -p | wc -l) )) > $1 )); do echo "Waiting for $JOBS_COUNT command(s) executed in the background, elapsed time: $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"; jobs >/dev/null ; sleep $2; done
 }
+# Start docker Registry
+docker run -d \
+  -p 5000:5000 \
+  --restart=always \
+  --name registry.localhost \
+  --network k3d-kyma \
+  -v $PWD/registry:/var/lib/registry \
+  registry:2
 
 # Create Kyma cluster
-k3d create --publish 80:80 --publish 443:443 --enable-registry --registry-volume local_registry --registry-name registry.localhost --server-arg --no-deploy --server-arg traefik -n kyma -t 60 
+k3d cluster create kyma \
+    --port 80:80@loadbalancer \
+    --port 443:443@loadbalancer \
+    --k3s-server-arg --no-deploy \
+    --k3s-server-arg traefik \
+    --volume $PWD/registries.yaml:/etc/rancher/k3s/registries.yaml \
+    --timeout 60s 
 
+docker network connect k3d-kyma registry.localhost
 
 # Delete cluster with keep-registry-volume to cache docker images
-# k3d delete --keep-registry-volume -n kyma
+# k3d cluster delete kyma
 echo "Cluster created in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
-export KUBECONFIG="$(k3d get-kubeconfig -n='kyma')"
+
+export KUBECONFIG="$(k3d kubeconfig get kyma)"
 
 # This file will be created by cert-manager (not needed anymore):
 rm resources/core/charts/gateway/templates/kyma-gateway-certs.yaml
@@ -29,7 +45,7 @@ rm resources/ory/templates/job-secret-migration.yaml
 rm resources/application-connector/charts/application-broker/templates/subscription-migration.yaml
 
 # Delete ugly NOTES.txt to have cleaner output
-rm rm resources/dex/templates/NOTES.txt 
+rm resources/dex/templates/NOTES.txt 
 rm resources/core/templates/NOTES.txt
 rm resources/istio-kyma-patch/templates/NOTES.txt
 
@@ -50,7 +66,7 @@ helm upgrade -i testing resources/testing -n kyma-system &
 kubectl apply -f cert-manager.yaml &
 
 # Patch CoreDNS with entries for registry.localhost and *.local.kyma.dev
-export REGISTRY_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' /k3d-registry)
+export REGISTRY_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' /registry.localhost)
 sed "s/REGISTRY_IP/$REGISTRY_IP/" coredns-patch.tpl >coredns-patch.yaml
 kubectl -n kube-system patch cm coredns --patch "$(cat coredns-patch.yaml)" &
 
