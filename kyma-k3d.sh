@@ -25,13 +25,13 @@ k3d cluster create kyma \
     --k3s-server-arg traefik \
     --network k3d-kyma \
     --volume $PWD/registries.yaml:/etc/rancher/k3s/registries.yaml \
+    --wait \
+    --switch-context \
     --timeout 60s 
 
 # Delete cluster with keep-registry-volume to cache docker images
 # k3d cluster delete kyma
 echo "Cluster created in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
-
-k3d kubeconfig merge kyma --switch-context
 
 # This file will be created by cert-manager (not needed anymore):
 rm resources/core/charts/gateway/templates/kyma-gateway-certs.yaml
@@ -49,17 +49,17 @@ rm resources/istio-kyma-patch/templates/NOTES.txt
 kubectl create ns kyma-system
 kubectl create ns istio-system
 kubectl create ns kyma-integration
-kubectl create ns cert-manager
 kubectl create ns knative-serving
 kubectl create ns knative-eventing
 kubectl create ns natss
 
 kubectl label ns istio-system istio-injection=disabled --overwrite
-kubectl label ns cert-manager istio-injection=disabled --overwrite
+
+# Wait for nodes to be ready before scheduling any workload
+while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready, elapsed time: $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"; sleep 2; done
 
 helm upgrade -i cluster-essentials resources/cluster-essentials -n kyma-system &
 helm upgrade -i testing resources/testing -n kyma-system &
-kubectl apply -f cert-manager.yaml &
 
 # Patch CoreDNS with entries for registry.localhost and *.local.kyma.dev
 export REGISTRY_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' /registry.localhost)
