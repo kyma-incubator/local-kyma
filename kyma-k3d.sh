@@ -49,13 +49,11 @@ rm resources/istio-kyma-patch/templates/NOTES.txt
 kubectl create ns kyma-system
 kubectl create ns istio-system
 kubectl create ns kyma-integration
-kubectl create ns cert-manager
 kubectl create ns knative-serving
 kubectl create ns knative-eventing
 kubectl create ns natss
 
 kubectl label ns istio-system istio-injection=disabled --overwrite
-kubectl label ns cert-manager istio-injection=disabled --overwrite
 
 # Wait for nodes to be ready before scheduling any workload
 while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready, elapsed time: $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"; sleep 2; done
