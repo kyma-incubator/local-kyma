@@ -1,4 +1,5 @@
-SECONDS=0
+SECONDS=0  
+REGISTRY_CONFIG=${1:-registries.yaml}
 
 # Wait until number of background jobs is less than $1, try every $2 second(s)
 function waitForJobs() {
@@ -24,7 +25,7 @@ k3d cluster create kyma \
     --k3s-server-arg --no-deploy \
     --k3s-server-arg traefik \
     --network k3d-kyma \
-    --volume $PWD/registries.yaml:/etc/rancher/k3s/registries.yaml \
+    --volume $PWD/${REGISTRY_CONFIG}:/etc/rancher/k3s/registries.yaml \
     --wait \
     --switch-context \
     --timeout 60s 
