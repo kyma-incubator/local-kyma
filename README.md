@@ -37,7 +37,7 @@ Your cluster is ready!
 ./kyma-k3d-delete.sh
 ```
 
-# Cache docker registry localy
+# Cache docker registry
 
 Install [crane](https://github.com/google/go-containerregistry/tree/master/cmd/crane) tool with:
 ```
@@ -59,13 +59,13 @@ Start it again with using [cached-registries](cached-registries.yaml):
 ./kyma-k3d.sh cached-registries.yaml
 ```
 
-This time all the images from docker.io, eu.gcr.io, gcr.io and quay.io will be fetched from your local registry.
+This time all the images from docker.io, eu.gcr.io, gcr.io, and quay.io will be fetched from your local registry.
 
-Be aware that if you download newer Kyma charts some new images can be used that are not stored in the cache. In this case installation can fail and you will see some pods in status `ImagePullBackOff`. To fix the problem can just copy missing image using crane:
+Be aware that if you download newer Kyma charts some new images can be used that are not stored in the cache. In this case, installation can fail and you will see some pods in status `ImagePullBackOff`. To fix the problem can just copy the missing image using crane:
 ```
 crane cp some.docker.registry/path/image:tag registry.localhost:5000/path/image:tag
 ```
-If there is more such images you can just start the caching procedure again.
+If there are more such images you can just start the caching procedure again.
 
 # FAQ
 
