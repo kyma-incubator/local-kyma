@@ -67,6 +67,18 @@ crane cp some.docker.registry/path/image:tag registry.localhost:5000/path/image:
 ```
 If there are more such images you can just start the caching procedure again.
 
+# Stop and start cluster
+
+You can stop Kyma cluster with:
+```
+k3d cluster stop kyma
+```
+To start it again execute:
+```
+./kyma-k3d-start.sh
+```
+Please bear in mind that after restart Kubernetes will probably restart most of the pods and it takes some time (few minutes).
+
 # FAQ
 
 
