@@ -97,7 +97,6 @@ helm upgrade -i apiserver-proxy resources/apiserver-proxy --set $OVERRIDES -n ky
 helm upgrade -i serverless resources/serverless --set $LOCALREGISTRY -n kyma-system &
 helm upgrade -i logging resources/logging --set $OVERRIDES -n kyma-system &
 
-helm upgrade -i knative-serving resources/knative-serving --set $OVERRIDES -n knative-serving &
 helm upgrade -i knative-eventing resources/knative-eventing -n knative-eventing &
 
 helm upgrade -i application-connector resources/application-connector --set $OVERRIDES -n kyma-integration &

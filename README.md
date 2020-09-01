@@ -81,7 +81,6 @@ Please bear in mind that after restart Kubernetes will probably restart most of 
 
 # FAQ
 
-
 ## Can I use the script on Linux or Windows
 
 The script was tested only on Mac OS. It should not be a big problem to adapt it to Linux, but it wasn't tested there. There is a plan to move the script to Kyma CLI - once it is done all platforms will be supported.
@@ -105,3 +104,23 @@ Currently, it doesn't work - not all pods can recover. See the [issue](https://g
 ## What to do if I get an error?
 
 Installation may fail, as the script is simple and doesn't have any retries implemented. Before you start over from scratch you can try to fix the failed component. First, find a failed helm release: `helm ls --all-namespaces`, then find the line in the kyma-k3d.sh script that is installing that component and execute it again. Remember to switch kubeconfig context and set the environment variables used in the command before you run the `helm upgrade` (usually DOMAIN, OVERRIDES). If it doesn't work or the number of broken components is bigger you can start from scratch deleting the k3s cluster with `kyma-k3d-delete.sh` first.
+
+---
+## Can I pick modules to install?
+
+Yes, just edit kyma-k3d.sh script and remove modules you don't need. 
+
+---
+## Why kyma-installer is scaled down to 0 replicas?
+
+Kyma-installer doesn't support parallel installation and local charts (from your local disk) yet. As the short time of installation and possibility to customize charts are main requirements for local development, the decision to use helm client directly was made. The deployment with 0 replicas is created only for Kyma console - it takes Kyma version from kyma-installer deployment version.
+
+---
+## How *.local.kyma.dev URLs are recognized on my machine?
+
+There is an A type DNS record pointing *.local.kyma.dev to 127.0.0.1. The k3s load balancer is exposed on port 443 of your local host. So all the https requests going to *.local.kyma.dev are routed to loadbalancer and then to istio-ingressgateway.
+
+---
+## How local.kyma.dev URL work inside the cluster (from pod)?
+
+In the cluster network `*.local.kyma.dev` points directly to `istio-ingressgateway.istio-system.svc.cluster.local`. It is done by patching CoreDNS [config map](coredns-patch.tpl).
