@@ -22,7 +22,7 @@ docker run -d \
   --name registry.localhost \
   --network k3d-kyma \
   -v $PWD/registry:/var/lib/registry \
-  registry:2
+  registry:2 || echo "Container already exists"
 
 # Create Kyma cluster
 k3d cluster create kyma \
