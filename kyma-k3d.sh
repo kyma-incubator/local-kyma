@@ -1,3 +1,9 @@
+#!/usr/bin/env bash
+set -o errexit          # Exit on most errors (see the manual)
+set -o errtrace         # Make sure any error trap is inherited
+set -o nounset          # Disallow expansion of unset variables
+set -o pipefail         # Use last non-zero exit code in a pipeline
+
 SECONDS=0  
 REGISTRY_CONFIG=${1:-registries.yaml}
 
@@ -7,7 +13,7 @@ function waitForJobs() {
 }
 
 # Create docker network
-docker network create k3d-kyma
+docker network create k3d-kyma || echo "Network already exists"
 
 # Start docker Registry
 docker run -d \
