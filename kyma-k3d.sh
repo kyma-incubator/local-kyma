@@ -60,6 +60,7 @@ kubectl label ns istio-system istio-injection=disabled --overwrite
 while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready, elapsed time: $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"; sleep 2; done
 
 kubectl apply -f resources/cluster-essentials/files -n kyma-system 
+helm upgrade -i pod-preset resources/cluster-essentials/charts/pod-preset -n kyma-system
 helm upgrade -i testing resources/testing -n kyma-system 
 
 # Patch CoreDNS with entries for registry.localhost and *.local.kyma.dev
