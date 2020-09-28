@@ -21,7 +21,8 @@ Start k3s cluster and Kyma:
 ./kyma-k3d.sh
 ```
 
-At the end script asks for your password to add TLS certificate to your key chain. 
+At the end script asks you to add TLS certificate to your key chain (the command for Mac OS X is provided). You need to do it only once.
+
 Use credentials to log into [Kyma Console](https://console.local.kyma.dev)
 
 If you wan to use `kubectl` to connect to the cluster, you have to first execute command `k3d kubeconfig merge kyma --switch-context`

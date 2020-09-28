@@ -59,18 +59,15 @@ kubectl label ns istio-system istio-injection=disabled --overwrite
 # Wait for nodes to be ready before scheduling any workload
 while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready, elapsed time: $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"; sleep 2; done
 
-helm upgrade -i cluster-essentials resources/cluster-essentials -n kyma-system &
-helm upgrade -i testing resources/testing -n kyma-system &
+kubectl apply -f resources/cluster-essentials/files -n kyma-system 
+helm upgrade -i testing resources/testing -n kyma-system 
 
 # Patch CoreDNS with entries for registry.localhost and *.local.kyma.dev
 export REGISTRY_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' /registry.localhost)
 sed "s/REGISTRY_IP/$REGISTRY_IP/" coredns-patch.tpl >coredns-patch.yaml
 kubectl -n kube-system patch cm coredns --patch "$(cat coredns-patch.yaml)" &
 
-helm upgrade -i istio resources/istio --set global.isLocalEnv=true -n istio-system &
-
-while [[ $(kubectl get pods -n istio-system -l istio=sidecar-injector -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for Istio sidecar-injector, elapsed time: $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"; sleep 10; done
-echo "Istio installed in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
+helm upgrade -i istio resources/istio --set global.isLocalEnv=true -n istio-system 
 
 # Set environment variables with chart values (overrides)
 export DOMAIN=local.kyma.dev
@@ -114,12 +111,15 @@ echo "##########################################################################
 echo "# Kyma cluster created in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
 echo "##############################################################################"
 echo
-echo "Genereated self signed TLS certificate is about to be added to your keychain (admin pass is required)"
 # Download the certificate: 
 kubectl get secret kyma-gateway-certs -n istio-system -o jsonpath='{.data.tls\.crt}' | base64 --decode > kyma.crt
 # Import the certificate: 
-sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain kyma.crt
-
+echo "Generated self signed TLS certificate should be trusted in your system. On Mac Os X execute this command:"
+echo ""
+echo "  sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain kyma.crt"
+echo ""
+echo "This is one time operation (you can skip this step if you did it before)."
+echo ""
 echo 'Kyma Console Url:'
 echo `kubectl get virtualservice console-web -n kyma-system -o jsonpath='{ .spec.hosts[0] }'`
 echo 'User admin@kyma.cx, password:'
