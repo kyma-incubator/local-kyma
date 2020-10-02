@@ -1,3 +1,9 @@
+# Overview
+This repository contains scripts to start Kyma on local K3S cluster in about 5 minutes!
+
+> Tested on Mac Book Pro 2017 (2,9 GHz Quad-Core Intel Core i7, 16 GB RAM, SSD disk)
+
+
 # Prerequisites
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [helm 3](https://helm.sh/docs/intro/quickstart/#install-helm)
