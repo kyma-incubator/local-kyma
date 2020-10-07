@@ -1,3 +1,6 @@
+KID=""
+while [[ -z $KID ]]; do echo "waiting for DEX to be ready"; KID=$(curl -sk https://dex.local.kyma.dev/keys |jq -r '.keys[0].kid'); sleep 5; done
+
 kubectl create namespace mocks
 kubectl label namespace mocks istio-injection=enabled --overwrite
 kubectl apply -f https://raw.githubusercontent.com/SAP/xf-application-mocks/master/commerce-mock/deployment/k8s.yaml -n mocks
@@ -52,7 +55,7 @@ kubectl -n kyma-integration \
   -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/args/6", "value": "--skipVerify=true"}]'
 
 MOCK_PROVIDER=""
-while [[ -z $MOCK_PROVIDER ]]; do echo "waiting for commerce mock to be ready"; MOCK_PROVIDER=$(curl -s https://commerce.local.kyma.dev/local/apis |jq -r '.[0].provider'); sleep 5; done
+while [[ -z $MOCK_PROVIDER ]]; do echo "waiting for commerce mock to be ready"; MOCK_PROVIDER=$(curl -sk https://commerce.local.kyma.dev/local/apis |jq -r '.[0].provider'); sleep 5; done
 
 cat <<EOF | kubectl apply -f -
 apiVersion: applicationconnector.kyma-project.io/v1alpha1
@@ -63,14 +66,14 @@ EOF
 
 TOKEN=$(kubectl get tokenrequest.applicationconnector.kyma-project.io commerce -ojsonpath='{.status.token}')
 
-curl 'https://commerce.local.kyma.dev/connection' \
+curl -k 'https://commerce.local.kyma.dev/connection' \
   -H 'content-type: application/json' \
   --data-binary '{"token":"https://connector-service.local.kyma.dev/v1/applications/signingRequests/info?token='$TOKEN'","baseUrl":"https://commerce.local.kyma.dev","insecure":true}' \
   --compressed
 
-COMMERCE_WEBSERVICES_ID=$(curl -s 'https://commerce.local.kyma.dev/local/apis/Commerce%20Webservices/register' -H 'content-type: application/json' -d '{}' --compressed | jq -r '.id')
+COMMERCE_WEBSERVICES_ID=$(curl -sk 'https://commerce.local.kyma.dev/local/apis/Commerce%20Webservices/register' -H 'content-type: application/json' -d '{}' --compressed | jq -r '.id')
 
-COMMERCE_EVENTS_ID=$(curl -s 'https://commerce.local.kyma.dev/local/apis/Events/register' -H 'content-type: application/json' -d '{}' --compressed | jq -r '.id')
+COMMERCE_EVENTS_ID=$(curl -sk 'https://commerce.local.kyma.dev/local/apis/Events/register' -H 'content-type: application/json' -d '{}' --compressed | jq -r '.id')
 
 WS_EXT_NAME=""
 while [[ -z $WS_EXT_NAME ]]; do echo "waiting for commerce webservices"; WS_EXT_NAME=$(kubectl get serviceclass $COMMERCE_WEBSERVICES_ID -o jsonpath='{.spec.externalName}'); sleep 2; done
@@ -167,10 +170,10 @@ PRICE=""
 
 while [[ -z $PRICE ]] 
 do
-  curl -s 'https://commerce.local.kyma.dev/events' \
+  curl -sk 'https://commerce.local.kyma.dev/events' \
   -H 'content-type: application/json' \
   -d '{"event-type": "order.created", "event-type-version": "v1", "event-time": "2020-09-28T14:47:16.491Z", "data": {    "orderCode": "123" }, "event-tracing": true}' >/dev/null
   sleep 1;
-  PRICE=$(curl -s https://lastorder.local.kyma.dev | jq -r 'select(.orderId=="123")| .totalPriceWithTax.value')
+  PRICE=$(curl -sk https://lastorder.local.kyma.dev | jq -r 'select(.orderId=="123")| .totalPriceWithTax.value')
   echo "waiting for last order price: $PRICE"
 done

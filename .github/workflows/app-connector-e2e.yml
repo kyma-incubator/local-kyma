@@ -1,0 +1,40 @@
+name: Tests on k3s
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare k3s and helm 3
+      run: |
+        mkdir -p ~/.kube
+        if [[ -f ./kubeconfig ]];
+        then
+          echo "use existing kubeconfig"
+          cp ./kubeconfig ~/.kube/config
+        else
+          echo "starting cluster"
+          curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE=777 INSTALL_K3S_EXEC="server --disable traefik" sh -
+          cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+          chmod 600 ~/.kube/config
+          echo "Installing helm"
+          curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+          while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
+        fi
+    - name: Install Kyma
+      env:
+        REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+        REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
+      run: |
+        ./download-kyma-charts.sh
+        export REGISTRY_VALUES="dockerRegistry.username=$REGISTRY_USER,dockerRegistry.password=$REGISTRY_PASS,dockerRegistry.enableInternal=false,dockerRegistry.serverAddress=ghcr.io,dockerRegistry.registryAddress=ghcr.io/$REGISTRY_USER,containers.manager.envs.buildRequestsCPU.value=400m"
+        ./install-kyma.sh
+        helm upgrade -i serverless resources/serverless -n kyma-system --set $REGISTRY_VALUES
+        sudo cp kyma.crt /usr/local/share/ca-certificates
+        sudo update-ca-certificates
+    - name: Run End To End Test
+      run: |
+        ./app-connector-example.sh
