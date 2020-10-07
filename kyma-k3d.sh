@@ -41,11 +41,6 @@ rm resources/core/charts/gateway/templates/kyma-gateway-certs.yaml
 rm resources/apiserver-proxy/requirements.yaml
 rm -R resources/apiserver-proxy/charts
 
-# Delete ugly NOTES.txt to have cleaner output
-rm resources/dex/templates/NOTES.txt 
-rm resources/core/templates/NOTES.txt
-rm resources/istio-kyma-patch/templates/NOTES.txt
-
 # Create namespaces
 kubectl create ns kyma-system
 kubectl create ns istio-system
