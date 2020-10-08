@@ -15,12 +15,14 @@ function helm_install() {
   local namespace=$3
   while true
   do
+    echo "Checking status of release $1 in the namespace $namespace"
     local status=$(helm ls -n $namespace -ojson | jq -r ".[]|select(.name==\"$release\")|.status")
     if [[ "$status" == "deployed" ]];
     then
       echo "$release deployed" 
       break
     fi
+    echo "Installing $1 in the namespace $namespace"    
     helm upgrade -i $release $chart -n $namespace "${@:4}" 
   done
 }
@@ -50,7 +52,7 @@ kubectl -n kube-system patch cm coredns --patch "$(cat coredns-patch.tpl)"
 kubectl apply -f resources/cluster-essentials/files -n kyma-system 
 helm_install pod-preset resources/cluster-essentials/charts/pod-preset kyma-system 
 helm_install testing resources/testing kyma-system 
-curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.5.8 sh -
+curl -sL https://istio.io/downloadIstio | ISTIO_VERSION=1.5.8 sh -
 istio-1.5.8/bin/istioctl manifest apply --set profile=demo 
 helm_install ingress-dns-cert ingress-dns-cert istio-system --set $OVERRIDES &
 

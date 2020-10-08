@@ -20,10 +20,10 @@ jobs:
           curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE=777 INSTALL_K3S_EXEC="server --disable traefik" sh -
           cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
           chmod 600 ~/.kube/config
-          echo "Installing helm"
-          curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-          while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
         fi
+        echo "Installing helm"
+        curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+        while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
     - name: Install Kyma
       env:
         REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -33,8 +33,8 @@ jobs:
         ./install-kyma.sh
         sudo cp kyma.crt /usr/local/share/ca-certificates
         sudo update-ca-certificates
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
     - name: Run End To End Test
       run: |
         ./app-connector-example.sh
