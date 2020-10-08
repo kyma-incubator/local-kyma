@@ -127,6 +127,42 @@ spec:
     = { \n  main: function (event, context) {\n\n    if (event.data && event.data.orderCode)
     {\n      lastOrder = getOrder(event.data.orderCode)\n    }\n    \n    return lastOrder;\n
     \ }\n}"
+---
+apiVersion: gateway.kyma-project.io/v1alpha1
+kind: APIRule
+metadata:
+  name: lastorder
+spec:
+  gateway: kyma-gateway.kyma-system.svc.cluster.local
+  rules:
+  - accessStrategies:
+    - config: {}
+      handler: allow
+    methods: ["*"]
+    path: /.*
+  service:
+    host: lastorder
+    name: lastorder
+    port: 80
+---
+apiVersion: eventing.knative.dev/v1alpha1
+kind: Trigger
+metadata:
+  labels:
+    function: lastorder
+  name: function-lastorder
+spec:
+  broker: default
+  filter:
+    attributes:
+      eventtypeversion: v1
+      source: commerce
+      type: order.created
+  subscriber:
+    ref:
+      apiVersion: v1
+      kind: Service
+      name: lastorder
 EOF
 
 GATEWAY=""
@@ -153,9 +189,9 @@ curl -k 'https://commerce.local.kyma.dev/connection' \
   --data-binary '{"token":"https://connector-service.local.kyma.dev/v1/applications/signingRequests/info?token='$TOKEN'","baseUrl":"https://commerce.local.kyma.dev","insecure":true}' \
   --compressed
 
-COMMERCE_WEBSERVICES_ID=$(curl -sk 'https://commerce.local.kyma.dev/local/apis/Commerce%20Webservices/register' -H 'content-type: application/json' -d '{}' --compressed | jq -r '.id')
+COMMERCE_WEBSERVICES_ID=$(curl -sk 'https://commerce.local.kyma.dev/local/apis/Commerce%20Webservices/register' -H 'content-type: application/json' -H 'origin: https://commerce.local.kyma.dev' -d '{}' --compressed | jq -r '.id')
 
-COMMERCE_EVENTS_ID=$(curl -sk 'https://commerce.local.kyma.dev/local/apis/Events/register' -H 'content-type: application/json' -d '{}' --compressed | jq -r '.id')
+COMMERCE_EVENTS_ID=$(curl -sk 'https://commerce.local.kyma.dev/local/apis/Events/register' -H 'content-type: application/json' -H 'origin: https://commerce.local.kyma.dev' -d '{}' --compressed | jq -r '.id')
 
 WS_EXT_NAME=""
 while [[ -z $WS_EXT_NAME ]]; do echo "waiting for commerce webservices"; WS_EXT_NAME=$(kubectl get serviceclass $COMMERCE_WEBSERVICES_ID -o jsonpath='{.spec.externalName}'); sleep 2; done
@@ -208,54 +244,19 @@ spec:
     name: lastorder
 EOF
 
-cat <<EOF | kubectl apply -f -
-apiVersion: gateway.kyma-project.io/v1alpha1
-kind: APIRule
-metadata:
-  name: lastorder
-spec:
-  gateway: kyma-gateway.kyma-system.svc.cluster.local
-  rules:
-  - accessStrategies:
-    - config: {}
-      handler: allow
-    methods: ["*"]
-    path: /.*
-  service:
-    host: lastorder
-    name: lastorder
-    port: 80
-EOF
+RUNNING=""
+SECONDS=0
+while [[ "$RUNNING" != "True" ]] && [[ $SECONDS -le 60 ]]; do RUNNING=$(kubectl get function hello -ojsonpath='{.status.conditions[?(@.type=="Running")].status}'); echo "waiting for function hello, pods:\n$(kubectl get pods)"; sleep 2; done
 
-cat <<EOF | kubectl apply -f -
-apiVersion: eventing.knative.dev/v1alpha1
-kind: Trigger
-metadata:
-  labels:
-    function: lastorder
-  name: function-lastorder
-spec:
-  broker: default
-  filter:
-    attributes:
-      eventtypeversion: v1
-      source: commerce
-      type: order.created
-  subscriber:
-    ref:
-      apiVersion: v1
-      kind: Service
-      name: lastorder
-EOF
 
 PRICE=""
-
 while [[ -z $PRICE ]] 
 do
   curl -sk 'https://commerce.local.kyma.dev/events' \
   -H 'content-type: application/json' \
   -d '{"event-type": "order.created", "event-type-version": "v1", "event-time": "2020-09-28T14:47:16.491Z", "data": {    "orderCode": "123" }, "event-tracing": true}' >/dev/null
   sleep 1;
-  PRICE=$(curl -sk https://lastorder.local.kyma.dev | jq -r 'select(.orderId=="123")| .totalPriceWithTax.value')
-  echo "waiting for last order price: $PRICE"
+  RESPONSE=$(curl -sk https://lastorder.local.kyma.dev)
+  PRICE=$(echo "$RESPONSE" | jq -r 'select(.orderId=="123")| .totalPriceWithTax.value')
+  echo "waiting for last order price, response: $RESPONSE"
 done
