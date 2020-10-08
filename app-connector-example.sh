@@ -97,10 +97,10 @@ curl -k 'https://commerce.local.kyma.dev/connection' \
   --compressed
 
 COMMERCE_WEBSERVICES_ID=""
-while [[ -z COMMERCE_WEBSERVICES_ID ]]; do echo "registering commerce webservices"; COMMERCE_WEBSERVICES_ID=$(curl -sk 'https://commerce.local.kyma.dev/local/apis/Commerce%20Webservices/register' -H 'content-type: application/json' -H 'origin: https://commerce.local.kyma.dev' -d '{}' --compressed | jq -r '.id'); sleep 2; done
+while [[ -z $COMMERCE_WEBSERVICES_ID ]]; do echo "registering commerce webservices"; COMMERCE_WEBSERVICES_ID=$(curl -sk 'https://commerce.local.kyma.dev/local/apis/Commerce%20Webservices/register' -H 'content-type: application/json' -H 'origin: https://commerce.local.kyma.dev' -d '{}' --compressed | jq -r '.id'); sleep 2; done
 
 COMMERCE_EVENTS_ID=""
-while [[ -z COMMERCE_EVENTS_ID ]]; do echo "registering commerce events"; COMMERCE_EVENTS_ID=$(curl -sk 'https://commerce.local.kyma.dev/local/apis/Events/register' -H 'content-type: application/json' -H 'origin: https://commerce.local.kyma.dev' -d '{}' --compressed | jq -r '.id'); sleep 2; done
+while [[ -z $COMMERCE_EVENTS_ID ]]; do echo "registering commerce events"; COMMERCE_EVENTS_ID=$(curl -sk 'https://commerce.local.kyma.dev/local/apis/Events/register' -H 'content-type: application/json' -H 'origin: https://commerce.local.kyma.dev' -d '{}' --compressed | jq -r '.id'); sleep 2; done
 
 WS_EXT_NAME=""
 while [[ -z $WS_EXT_NAME ]]; do echo "waiting for commerce webservices"; WS_EXT_NAME=$(kubectl get serviceclass $COMMERCE_WEBSERVICES_ID -o jsonpath='{.spec.externalName}'); sleep 2; done
