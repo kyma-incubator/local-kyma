@@ -38,20 +38,20 @@ spec:
           value: "true"
         - name: RENEWCERT_JOB_CRON
           value: "00 00 */12 * * *"
-        volumeMounts:
-        - mountPath: "/app/keys"
-          name: commerce-mock-volume
+        # volumeMounts:
+        # - mountPath: "/app/keys"
+        #   name: commerce-mock-volume
         resources:
           requests:
             memory: "150Mi"
             cpu: "50m"
           limits:
-            memory: "250Mi"
-            cpu: "100m"
-      volumes:
-      - name: commerce-mock-volume
-        persistentVolumeClaim:
-          claimName: commerce-mock 
+            memory: "350Mi"
+            cpu: "300m"
+      # volumes:
+      # - name: commerce-mock-volume
+      #   persistentVolumeClaim:
+      #     claimName: commerce-mock 
 ---
 apiVersion: v1
 kind: Service
