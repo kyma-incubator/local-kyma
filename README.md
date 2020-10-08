@@ -46,6 +46,22 @@ Your cluster is ready!
 ./kyma-k3d-delete.sh
 ```
 
+# Application Connector Example
+
+Empty Kyma cluster in 5 minutes is good enough. What about investing another 3 minutes to have:
+- SAP Commerce mock deployed and connected
+- simple serverless function named `lastorder` in the default namespace triggered by `order.created` event
+- Commerce Webservices API bound to the function
+
+Deploy the example with these commands:
+```
+./commerce-mock.sh
+./app-connector-example.sh
+```
+
+Then you can open [https://commerce.local.kyma.dev](https://commerce.local.kyma.dev) navigate to Remote API / SAP Commerce Cloud - Events and try to send order.created event with any code.
+When event is delivered you can check if your event was processed by calling the `lastorder` function exposed through API Gateway: [https://lastorder.local.kyma.dev](https://lastorder.local.kyma.dev)
+
 # Cache docker registry
 
 Install [crane](https://github.com/google/go-containerregistry/tree/master/cmd/crane) tool with:

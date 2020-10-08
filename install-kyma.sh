@@ -13,8 +13,10 @@ function helm_install() {
   local release=$1
   local chart=$2
   local namespace=$3
-  while true
+  local retries=3
+  while [ $retries -ge 0 ]
   do
+    ((retries--))
     echo "Checking status of release $1 in the namespace $namespace"
     local status=$(helm ls -n $namespace -ojson | jq -r ".[]|select(.name==\"$release\")|.status")
     if [[ "$status" == "deployed" ]];
@@ -23,7 +25,7 @@ function helm_install() {
       break
     fi
     echo "Installing $1 in the namespace $namespace"    
-    helm upgrade -i $release $chart -n $namespace "${@:4}" 
+    helm upgrade --wait -i $release $chart -n $namespace "${@:4}" 
   done
 }
 # This file will be created by cert-manager (not needed anymore):

@@ -1,91 +1,3 @@
-cat <<EOF |kubectl apply -f -
-apiVersion: v1
-kind: Namespace
-metadata:
-  labels:
-    istio-injection: enabled
-  name: mocks
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: commerce-mock
-  namespace: mocks
-  labels:
-    app: commerce-mock
-spec:
-  selector:
-    matchLabels:
-      app: commerce-mock
-  strategy:
-    rollingUpdate:
-      maxUnavailable: 1
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: commerce-mock
-    spec:
-      containers:
-      - image: eu.gcr.io/kyma-project/xf-application-mocks/commerce-mock:latest
-        imagePullPolicy: Always
-        name: commerce-mock
-        ports:
-        - name: http
-          containerPort: 10000
-        env:
-        - name: DEBUG
-          value: "true"
-        - name: RENEWCERT_JOB_CRON
-          value: "00 00 */12 * * *"
-        volumeMounts:
-        - mountPath: "/app/keys"
-          name: commerce-mock-volume
-        resources:
-          requests:
-            memory: "150Mi"
-            cpu: "50m"
-          limits:
-            memory: "350Mi"
-            cpu: "300m"
-      volumes:
-      - name: commerce-mock-volume
-        persistentVolumeClaim:
-          claimName: commerce-mock 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: commerce-mock
-  namespace: mocks
-  labels:
-    app: commerce-mock
-spec:
-  ports:
-  - name: http
-    port: 10000
-  selector:
-    app: commerce-mock
----
-apiVersion: gateway.kyma-project.io/v1alpha1
-kind: APIRule
-metadata:
-  name: commerce-mock
-  namespace: mocks
-spec:
-  gateway: kyma-gateway.kyma-system.svc.cluster.local
-  rules:
-  - accessStrategies:
-    - config: {}
-      handler: allow
-    methods: ["*"]
-    path: /.*
-  service:
-    host: commerce
-    name: commerce-mock
-    port: 10000
-EOF
-
 cat <<EOF | kubectl apply -f -
 apiVersion: applicationconnector.kyma-project.io/v1alpha1
 kind: Application
@@ -169,8 +81,6 @@ kubectl -n kyma-integration \
   patch deployment commerce-application-gateway --type=json \
   -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/args/6", "value": "--skipVerify=true"}]'
 
-MOCK_PROVIDER=""
-while [[ -z $MOCK_PROVIDER ]]; do echo "waiting for commerce mock to be ready"; MOCK_PROVIDER=$(curl -sk https://commerce.local.kyma.dev/local/apis |jq -r '.[0].provider'); sleep 5; done
 
 cat <<EOF | kubectl apply -f -
 apiVersion: applicationconnector.kyma-project.io/v1alpha1
@@ -186,9 +96,26 @@ curl -k 'https://commerce.local.kyma.dev/connection' \
   --data-binary '{"token":"https://connector-service.local.kyma.dev/v1/applications/signingRequests/info?token='$TOKEN'","baseUrl":"https://commerce.local.kyma.dev","insecure":true}' \
   --compressed
 
-COMMERCE_WEBSERVICES_ID=$(curl -sk 'https://commerce.local.kyma.dev/local/apis/Commerce%20Webservices/register' -H 'content-type: application/json' -H 'origin: https://commerce.local.kyma.dev' -d '{}' --compressed | jq -r '.id')
+COMMERCE_WEBSERVICES_ID=""
+while [[ -z $COMMERCE_WEBSERVICES_ID ]]; 
+do 
+  echo "registering commerce webservices"; 
+  curl -sk 'https://commerce.local.kyma.dev/local/apis/Commerce%20Webservices/register' -H 'content-type: application/json' -H 'origin: https://commerce.local.kyma.dev' -d '{}'
+  COMMERCE_WEBSERVICES_ID=$(curl -sk 'https://commerce.local.kyma.dev/remote/apis' | jq -r '.[]|select(.name|test("Commerce Webservices"))|.id') 
+  echo "COMMERCE_WEBSERVICES_ID=$COMMERCE_WEBSERVICES_ID" 
+  sleep 2 
+done
 
-COMMERCE_EVENTS_ID=$(curl -sk 'https://commerce.local.kyma.dev/local/apis/Events/register' -H 'content-type: application/json' -H 'origin: https://commerce.local.kyma.dev' -d '{}' --compressed | jq -r '.id')
+COMMERCE_EVENTS_ID=""
+while [[ -z $COMMERCE_EVENTS_ID ]]; 
+do 
+  echo "registering commerce events"; 
+  curl -sk 'https://commerce.local.kyma.dev/local/apis/Events/register' -H 'content-type: application/json' -H 'origin: https://commerce.local.kyma.dev' -d '{}'
+  COMMERCE_EVENTS_ID=$(curl -sk 'https://commerce.local.kyma.dev/remote/apis' | jq -r '.[]|select(.name|test("Events"))|.id') 
+  echo "COMMERCE_EVENTS_ID=$COMMERCE_EVENTS_ID" 
+  sleep 2 
+done
+
 
 WS_EXT_NAME=""
 while [[ -z $WS_EXT_NAME ]]; do echo "waiting for commerce webservices"; WS_EXT_NAME=$(kubectl get serviceclass $COMMERCE_WEBSERVICES_ID -o jsonpath='{.spec.externalName}'); sleep 2; done
