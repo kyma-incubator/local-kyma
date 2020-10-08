@@ -109,8 +109,8 @@ done
 COMMERCE_EVENTS_ID=""
 while [[ -z $COMMERCE_EVENTS_ID ]]; 
 do 
-  echo "registering commerce webservices"; 
-  curl -sk 'https://commerce.local.kyma.dev/local/apis/Commerce%20Webservices/register' -H 'content-type: application/json' -H 'origin: https://commerce.local.kyma.dev' -d '{}'
+  echo "registering commerce events"; 
+  curl -sk 'https://commerce.local.kyma.dev/local/apis/Events/register' -H 'content-type: application/json' -H 'origin: https://commerce.local.kyma.dev' -d '{}'
   COMMERCE_EVENTS_ID=$(curl -sk 'https://commerce.local.kyma.dev/remote/apis' | jq -r '.[]|select(.name|test("Events"))|.id') 
   echo "COMMERCE_EVENTS_ID=$COMMERCE_EVENTS_ID" 
   sleep 2 
