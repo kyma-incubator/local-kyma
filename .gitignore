@@ -4,3 +4,4 @@ dist
 registry
 coredns-patch.yaml
 kyma.crt
+istio-*
