@@ -206,19 +206,14 @@ metadata:
   name: commerce-webservices
 spec:
   serviceClassExternalName: $WS_EXT_NAME
-EOF
-
-cat <<EOF | kubectl apply -f -
+---
 apiVersion: servicecatalog.k8s.io/v1beta1
 kind: ServiceInstance
 metadata:
   name: commerce-events
 spec:
   serviceClassExternalName: $EVENTS_EXT_NAME
-EOF
-
-
-cat <<EOF | kubectl apply -f -
+---
 apiVersion: servicecatalog.k8s.io/v1beta1
 kind: ServiceBinding
 metadata:
@@ -243,11 +238,6 @@ spec:
     kind: serverless-function
     name: lastorder
 EOF
-
-RUNNING=""
-SECONDS=0
-while [[ "$RUNNING" != "True" ]] && [[ $SECONDS -le 60 ]]; do RUNNING=$(kubectl get function hello -ojsonpath='{.status.conditions[?(@.type=="Running")].status}'); echo "waiting for function hello, pods:\n$(kubectl get pods)"; sleep 2; done
-
 
 PRICE=""
 while [[ -z $PRICE ]] 
