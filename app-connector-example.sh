@@ -1,6 +1,3 @@
-KID=""
-while [[ -z $KID ]]; do echo "waiting for DEX to be ready"; KID=$(curl -sk https://dex.local.kyma.dev/keys |jq -r '.keys[0].kid'); sleep 5; done
-
 cat <<EOF |kubectl apply -f -
 apiVersion: v1
 kind: Namespace
@@ -49,8 +46,8 @@ spec:
             memory: "150Mi"
             cpu: "50m"
           limits:
-            memory: "250Mi"
-            cpu: "100m"
+            memory: "350Mi"
+            cpu: "300m"
       # volumes:
       # - name: commerce-mock-volume
       #   persistentVolumeClaim:

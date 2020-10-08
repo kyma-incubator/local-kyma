@@ -2,14 +2,15 @@ name: Tests on k3s
 
 on: 
   push:
-  pull_request:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
   schedule:
     - cron: '0 * * * *' # every hour
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
     - uses: actions/checkout@v2
     - name: Prepare k3s and helm 3
