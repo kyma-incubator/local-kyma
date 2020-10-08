@@ -2,7 +2,8 @@ SECONDS=0
 export DOMAIN=local.kyma.dev
 export OVERRIDES=global.isLocalEnv=false,global.ingress.domainName=$DOMAIN,global.environment.gardener=false,global.domainName=$DOMAIN,global.tlsCrt=ZHVtbXkK
 export ORY=global.ory.hydra.persistence.enabled=false,global.ory.hydra.persistence.postgresql.enabled=false,hydra.hydra.autoMigrate=false
-       
+export REGISTRY_VALUES="dockerRegistry.username=$REGISTRY_USER,dockerRegistry.password=$REGISTRY_PASS,dockerRegistry.enableInternal=false,dockerRegistry.serverAddress=ghcr.io,dockerRegistry.registryAddress=ghcr.io/$REGISTRY_USER"       
+
 # Wait until number of background jobs is less than $1, try every $2 second(s)
 function waitForJobs() {
     while (( (( JOBS_COUNT=$(jobs -p | wc -l) )) > $1 )); do echo "Waiting for $JOBS_COUNT command(s) executed in the background, elapsed time: $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"; jobs >/dev/null ; sleep $2; done
@@ -68,6 +69,7 @@ helm_install core resources/core kyma-system --set $OVERRIDES&
 # helm_install console resources/console kyma-system --set $OVERRIDES &
 # helm_install cluster-users resources/cluster-users kyma-system --set $OVERRIDES &
 # helm_install apiserver-proxy resources/apiserver-proxy kyma-system --set $OVERRIDES &
+helm_install serverless resources/serverless kyma-system --set $REGISTRY_VALUES --set containers.manager.envs.buildRequestsCPU.value=400m &
 # helm_install logging resources/logging kyma-system --set $OVERRIDES &
 # helm_install tracing resources/tracing kyma-system --set $OVERRIDES &
 

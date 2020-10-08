@@ -30,11 +30,11 @@ jobs:
         REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
       run: |
         ./download-kyma-charts.sh
-        export REGISTRY_VALUES="dockerRegistry.username=$REGISTRY_USER,dockerRegistry.password=$REGISTRY_PASS,dockerRegistry.enableInternal=false,dockerRegistry.serverAddress=ghcr.io,dockerRegistry.registryAddress=ghcr.io/$REGISTRY_USER,containers.manager.envs.buildRequestsCPU.value=400m"
         ./install-kyma.sh
-        helm upgrade -i serverless resources/serverless -n kyma-system --set $REGISTRY_VALUES
         sudo cp kyma.crt /usr/local/share/ca-certificates
         sudo update-ca-certificates
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
     - name: Run End To End Test
       run: |
         ./app-connector-example.sh
