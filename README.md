@@ -1,3 +1,5 @@
+![Tests on k3s](https://github.com/kyma-incubator/local-kyma-k3d/workflows/Tests%20on%20k3s/badge.svg)
+
 # Overview
 This repository contains scripts to start Kyma on local K3S cluster in about 5 minutes!
 
