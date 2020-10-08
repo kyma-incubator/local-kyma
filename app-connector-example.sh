@@ -1,6 +1,3 @@
-KID=""
-while [[ -z $KID ]]; do echo "waiting for DEX to be ready"; KID=$(curl -sk https://dex.local.kyma.dev/keys |jq -r '.keys[0].kid'); sleep 5; done
-
 cat <<EOF |kubectl apply -f -
 apiVersion: v1
 kind: Namespace
@@ -41,9 +38,9 @@ spec:
           value: "true"
         - name: RENEWCERT_JOB_CRON
           value: "00 00 */12 * * *"
-        # volumeMounts:
-        # - mountPath: "/app/keys"
-        #   name: commerce-mock-volume
+        volumeMounts:
+        - mountPath: "/app/keys"
+          name: commerce-mock-volume
         resources:
           requests:
             memory: "150Mi"
@@ -51,10 +48,10 @@ spec:
           limits:
             memory: "250Mi"
             cpu: "100m"
-      # volumes:
-      # - name: commerce-mock-volume
-      #   persistentVolumeClaim:
-      #     claimName: commerce-mock 
+      volumes:
+      - name: commerce-mock-volume
+        persistentVolumeClaim:
+          claimName: commerce-mock 
 ---
 apiVersion: v1
 kind: Service
