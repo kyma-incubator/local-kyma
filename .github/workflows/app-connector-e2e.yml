@@ -2,7 +2,7 @@ name: Tests on k3s
 
 on: 
   push:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened]
   schedule:
     - cron: '0 * * * *' # every hour
@@ -50,8 +50,8 @@ jobs:
     - name: Install Commerce Mock
       run: |
         ./commerce-mock.sh
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
     - name: Run End To End Test
       run: |
         ./app-connector-example.sh
