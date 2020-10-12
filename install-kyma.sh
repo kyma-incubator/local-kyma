@@ -51,7 +51,9 @@ kubectl label ns default istio-injection=enabled --overwrite
 # Wait for nodes to be ready before scheduling any workload
 while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready, elapsed time: $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"; sleep 2; done
 
-kubectl -n kube-system patch cm coredns --patch "$(cat coredns-patch.tpl)"
+export REGISTRY_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' /registry.localhost)
+sed "s/REGISTRY_IP/$REGISTRY_IP/" coredns-patch.tpl >coredns-patch.yaml
+kubectl -n kube-system patch cm coredns --patch "$(cat coredns-patch.yaml)"
 kubectl apply -f resources/cluster-essentials/files -n kyma-system 
 helm_install pod-preset resources/cluster-essentials/charts/pod-preset kyma-system 
 helm_install testing resources/testing kyma-system 
