@@ -47,11 +47,11 @@ jobs:
         ./install-kyma.sh
         sudo cp kyma.crt /usr/local/share/ca-certificates
         sudo update-ca-certificates
-    # - name: Setup tmate session
-    #   uses: mxschmitt/action-tmate@v3
     - name: Install Commerce Mock
       run: |
         ./commerce-mock.sh
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
     - name: Run End To End Test
       run: |
         ./app-connector-example.sh
