@@ -1,0 +1,16 @@
+name: Tests on k3s
+
+on: 
+  workflow_dispatch:
+  push:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
