@@ -1,4 +1,4 @@
-name: Tests on k3s
+name: Terminal
 
 on: 
   workflow_dispatch:
