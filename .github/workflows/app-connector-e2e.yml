@@ -38,6 +38,8 @@ jobs:
         echo "Installing helm"
         curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
         while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
+    - name: See the cluster
+      uses: mxschmitt/action-tmate@v3
     - name: Install Kyma
       env:
         REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
