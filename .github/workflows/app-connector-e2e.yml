@@ -39,6 +39,8 @@ jobs:
         curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
         while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
     - name: Install Kyma
+      env: 
+        SKIP_MODULES=apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
       run: |
         ./download-kyma-charts.sh
         ./install-kyma.sh

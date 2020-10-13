@@ -82,6 +82,8 @@ kubectl -n kyma-integration \
   -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/args/6", "value": "--skipVerify=true"}]'
 
 
+kubectl delete tokenrequest commerce
+
 cat <<EOF | kubectl apply -f -
 apiVersion: applicationconnector.kyma-project.io/v1alpha1
 kind: TokenRequest
@@ -89,12 +91,14 @@ metadata:
   name: commerce
 EOF
 
-TOKEN=$(kubectl get tokenrequest.applicationconnector.kyma-project.io commerce -ojsonpath='{.status.token}')
+TOKEN=""
+while [[ -z $TOKEN ]] ; do TOKEN=$(kubectl get tokenrequest.applicationconnector.kyma-project.io commerce -ojsonpath='{.status.token}'); echo "waiting for token"; sleep 2; done
 
 curl -k 'https://commerce.local.kyma.dev/connection' \
   -H 'content-type: application/json' \
   --data-binary '{"token":"https://connector-service.local.kyma.dev/v1/applications/signingRequests/info?token='$TOKEN'","baseUrl":"https://commerce.local.kyma.dev","insecure":true}' \
   --compressed
+
 
 COMMERCE_WEBSERVICES_ID=""
 while [[ -z $COMMERCE_WEBSERVICES_ID ]]; 
