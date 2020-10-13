@@ -15,6 +15,11 @@ function helm_install() {
   local chart=$2
   local namespace=$3
   local retries=3
+  if [[ $SKIP_MODULES =~ $release ]]; 
+  then
+    echo "$release skipped"
+    return 0
+  fi
   while [ $retries -ge 0 ]
   do
     ((retries--))
@@ -37,15 +42,35 @@ rm resources/apiserver-proxy/requirements.yaml
 rm -R resources/apiserver-proxy/charts
 
 # Create namespaces
-kubectl create ns kyma-system
-kubectl create ns kyma-integration
-kubectl create ns knative-eventing
-kubectl create ns natss
-
-kubectl label ns kyma-system istio-injection=enabled --overwrite
-kubectl label ns kyma-integration istio-injection=enabled --overwrite
-kubectl label ns knative-eventing istio-injection=enabled --overwrite
-kubectl label ns default istio-injection=enabled --overwrite
+cat <<EOF | kubectl apply -f - 
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    istio-injection: enabled
+  name: kyma-system
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    istio-injection: enabled
+  name: kyma-integration
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    istio-injection: enabled
+  name: knative-eventing
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    istio-injection: enabled
+  name: natss
+EOF
 
 # Wait for nodes to be ready before scheduling any workload
 while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready, elapsed time: $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"; sleep 2; done
@@ -56,9 +81,8 @@ kubectl -n kube-system patch cm coredns --patch "$(cat coredns-patch.yaml)"
 kubectl apply -f resources/cluster-essentials/files -n kyma-system 
 helm_install pod-preset resources/cluster-essentials/charts/pod-preset kyma-system 
 helm_install testing resources/testing kyma-system 
-helm_install ingress-dns-cert ingress-dns-cert istio-system --set $OVERRIDES &
 
-#helm_install istio-kyma-patch resources/istio-kyma-patch istio-system &
+helm_install ingress-dns-cert ingress-dns-cert istio-system --set $OVERRIDES &
 
 helm_install dex resources/dex kyma-system --set $OVERRIDES &
 helm_install ory resources/ory kyma-system --set $OVERRIDES --set $ORY &
@@ -67,15 +91,15 @@ helm_install api-gateway resources/api-gateway kyma-system --set $OVERRIDES &
 helm_install rafter resources/rafter kyma-system --set $OVERRIDES &
 helm_install service-catalog resources/service-catalog kyma-system --set $OVERRIDES &
 helm_install service-catalog-addons resources/service-catalog-addons kyma-system --set $OVERRIDES &
-# helm_install helm-broker resources/helm-broker kyma-system --set $OVERRIDES &
+helm_install helm-broker resources/helm-broker kyma-system --set $OVERRIDES &
 
 helm_install core resources/core kyma-system --set $OVERRIDES&
-# helm_install console resources/console kyma-system --set $OVERRIDES &
-# helm_install cluster-users resources/cluster-users kyma-system --set $OVERRIDES &
-# helm_install apiserver-proxy resources/apiserver-proxy kyma-system --set $OVERRIDES &
-helm_install serverless resources/serverless kyma-system --set $REGISTRY_VALUES --set containers.manager.envs.buildRequestsCPU.value=400m &
-# helm_install logging resources/logging kyma-system --set $OVERRIDES &
-# helm_install tracing resources/tracing kyma-system --set $OVERRIDES &
+helm_install console resources/console kyma-system --set $OVERRIDES &
+helm_install cluster-users resources/cluster-users kyma-system --set $OVERRIDES &
+helm_install apiserver-proxy resources/apiserver-proxy kyma-system --set $OVERRIDES &
+helm_install serverless resources/serverless kyma-system --set $REGISTRY_VALUES &
+helm_install logging resources/logging kyma-system --set $OVERRIDES &
+helm_install tracing resources/tracing kyma-system --set $OVERRIDES &
 
 helm_install knative-eventing resources/knative-eventing knative-eventing &
 

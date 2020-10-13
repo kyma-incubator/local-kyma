@@ -72,6 +72,8 @@ jobs:
         ### Install istio 1.5.10-distroless
         ./istioctl manifest apply -f kind-istio-install.yaml
     - name: Install Kyma
+      env: 
+        SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
       run: |
         ./download-kyma-charts.sh
         ./install-kyma-kind.sh
