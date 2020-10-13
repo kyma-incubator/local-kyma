@@ -3,7 +3,7 @@ set -o errexit
 
 ### Create kind cluster
 
-./kind-with-docker-registry.sh
+./create-cluster-kind.sh
 
 while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
 
