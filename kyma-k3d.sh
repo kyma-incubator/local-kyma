@@ -81,7 +81,7 @@ helm upgrade -i api-gateway resources/api-gateway --set $OVERRIDES -n kyma-syste
 helm upgrade -i rafter resources/rafter --set $OVERRIDES -n kyma-system &
 helm upgrade -i service-catalog resources/service-catalog --set $OVERRIDES -n kyma-system &
 helm upgrade -i service-catalog-addons resources/service-catalog-addons --set $OVERRIDES -n kyma-system &
-# helm upgrade -i helm-broker resources/helm-broker --set $OVERRIDES -n kyma-system &
+helm upgrade -i helm-broker resources/helm-broker --set $OVERRIDES -n kyma-system &
 
 helm upgrade -i core resources/core --set $OVERRIDES -n kyma-system &
 helm upgrade -i console resources/console --set $OVERRIDES -n kyma-system &
@@ -89,6 +89,7 @@ helm upgrade -i cluster-users resources/cluster-users --set $OVERRIDES -n kyma-s
 helm upgrade -i apiserver-proxy resources/apiserver-proxy --set $OVERRIDES -n kyma-system &
 helm upgrade -i serverless resources/serverless --set $LOCALREGISTRY -n kyma-system &
 helm upgrade -i logging resources/logging --set $OVERRIDES -n kyma-system &
+helm upgrade -i tracing resources/tracing --set $OVERRIDES -n kyma-system &
 
 helm upgrade -i knative-eventing resources/knative-eventing -n knative-eventing &
 
