@@ -17,9 +17,9 @@ apiVersion: serverless.kyma-project.io/v1alpha1
 kind: Function
 metadata:
   labels:
-    serverless.kyma-project.io/build-resources-preset:slow
-    serverless.kyma-project.io/function-resources-preset:S
-    serverless.kyma-project.io/replicas-preset:S
+    serverless.kyma-project.io/build-resources-preset: slow
+    serverless.kyma-project.io/function-resources-preset: S
+    serverless.kyma-project.io/replicas-preset: S
   name: lastorder
 spec:
   deps: "{ \n  \"name\": \"orders\",\n  \"version\": \"1.0.0\",\n  \"dependencies\":
