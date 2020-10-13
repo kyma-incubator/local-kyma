@@ -24,14 +24,14 @@ helm upgrade -i pod-preset resources/cluster-essentials/charts/pod-preset -n kym
 helm upgrade -i testing resources/testing -n kyma-system
 
 # Patch CoreDNS with entries for registry.localhost and *.local.kyma.dev
-export REGISTRY_IP=$(docker inspect -f '{{.NetworkSettings.Networks.kind.IPAddress}}' kind-registry)
+export REGISTRY_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' /registry.localhost)
 sed "s/REGISTRY_IP/$REGISTRY_IP/" coredns-patch.tpl >coredns-patch.yaml
 kubectl -n kube-system patch cm coredns --patch "$(cat coredns-patch.yaml)" 
 
 export DOMAIN=local.kyma.dev
 export OVERRIDES=global.isLocalEnv=false,global.ingress.domainName=$DOMAIN,global.environment.gardener=false,global.domainName=$DOMAIN,global.tlsCrt=ZHVtbXkK
 export ORY=global.ory.hydra.persistence.enabled=false,global.ory.hydra.persistence.postgresql.enabled=false,hydra.hydra.autoMigrate=false
-export LOCALREGISTRY="dockerRegistry.enableInternal=false,dockerRegistry.serverAddress=localhost:5000,dockerRegistry.registryAddress=localhost:5000,global.ingress.domainName=$DOMAIN"
+export LOCALREGISTRY="dockerRegistry.enableInternal=false,dockerRegistry.serverAddress=registry.localhost:5000,dockerRegistry.registryAddress=registry.localhost:5000,global.ingress.domainName=$DOMAIN"
 
 helm upgrade -i ingress-dns-cert ingress-dns-cert --set $OVERRIDES -n istio-system
 helm upgrade -i istio-kyma-patch resources/istio-kyma-patch -n istio-system

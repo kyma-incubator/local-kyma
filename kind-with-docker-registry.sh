@@ -2,12 +2,16 @@
 set -o errexit
 
 # create registry container unless it already exists
-reg_name='kind-registry'
+reg_name='registry.localhost'
 reg_port='5000'
 running="$(docker inspect -f '{{.State.Running}}' "${reg_name}" 2>/dev/null || true)"
 if [ "${running}" != 'true' ]; then
-  docker run \
-    -d --restart=always -p "${reg_port}:5000" --name "${reg_name}" \
+  # Start docker Registry
+  docker run -d \
+    -p "${reg_port}:5000" \
+    --restart=always \
+    --name "${reg_name}" \
+    -v $PWD/registry:/var/lib/registry \
     registry:2
 fi
 
