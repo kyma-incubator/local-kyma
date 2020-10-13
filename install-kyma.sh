@@ -103,7 +103,7 @@ helm_install core resources/core kyma-system --set $OVERRIDES&
 helm_install console resources/console kyma-system --set $OVERRIDES &
 helm_install cluster-users resources/cluster-users kyma-system --set $OVERRIDES &
 helm_install apiserver-proxy resources/apiserver-proxy kyma-system --set $OVERRIDES &
-helm_install serverless resources/serverless kyma-system --set $REGISTRY_VALUES --set containers.manager.envs.buildRequestsCPU.value=400m &
+helm_install serverless resources/serverless kyma-system --set $REGISTRY_VALUES &
 helm_install logging resources/logging kyma-system --set $OVERRIDES &
 helm_install tracing resources/tracing kyma-system --set $OVERRIDES &
 
