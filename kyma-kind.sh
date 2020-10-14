@@ -12,9 +12,8 @@ while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready"
 ./download-istioctl.sh
 
 ### Install istio 1.5.10-distroless
-
 ./istioctl manifest apply -f kind-istio-install.yaml
 
 ### Install kyma
-
+export SKIP_MODULES="apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing"
 ./install-kyma.sh
