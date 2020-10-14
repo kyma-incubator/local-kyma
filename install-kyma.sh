@@ -75,9 +75,13 @@ EOF
 # Wait for nodes to be ready before scheduling any workload
 while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready, elapsed time: $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"; sleep 2; done
 
-export REGISTRY_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' /registry.localhost)
+if [[ -z $REGISTRY_IP ]]; then 
+  export REGISTRY_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' /registry.localhost)
+fi
+echo "Patching CoreDns with REGISTRY_IP=$REGISTRY_IP"
 sed "s/REGISTRY_IP/$REGISTRY_IP/" coredns-patch.tpl >coredns-patch.yaml
 kubectl -n kube-system patch cm coredns --patch "$(cat coredns-patch.yaml)"
+
 kubectl apply -f resources/cluster-essentials/files -n kyma-system 
 helm_install pod-preset resources/cluster-essentials/charts/pod-preset kyma-system 
 helm_install testing resources/testing kyma-system 
