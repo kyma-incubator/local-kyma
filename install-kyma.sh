@@ -82,12 +82,6 @@ kubectl apply -f resources/cluster-essentials/files -n kyma-system
 helm_install pod-preset resources/cluster-essentials/charts/pod-preset kyma-system 
 helm_install testing resources/testing kyma-system 
 
-# Instal istio
-if [[ ! -f istio-1.5.8/bin/istioctl ]]; then
-  curl -sL https://istio.io/downloadIstio | ISTIO_VERSION=1.5.8 sh -
-fi
-istio-1.5.8/bin/istioctl manifest apply --set profile=demo 
-
 helm_install ingress-dns-cert ingress-dns-cert istio-system --set $OVERRIDES &
 
 helm_install dex resources/dex kyma-system --set $OVERRIDES &
