@@ -46,6 +46,7 @@ jobs:
         sudo update-ca-certificates
     - name: Install Commerce Mock
       run: |
+        sudo minikube tunnel &
         ./commerce-mock.sh
     # - name: Setup tmate session
     #   uses: mxschmitt/action-tmate@v3
