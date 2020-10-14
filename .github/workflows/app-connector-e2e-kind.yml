@@ -33,7 +33,7 @@ jobs:
         SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
       run: |
         ./download-kyma-charts.sh
-        ./install-kyma-kind.sh
+        ./install-kyma.sh
         sudo cp kyma.crt /usr/local/share/ca-certificates
         sudo update-ca-certificates
     - name: Install Commerce Mock

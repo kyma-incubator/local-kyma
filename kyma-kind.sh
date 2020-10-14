@@ -17,4 +17,4 @@ while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready"
 
 ### Install kyma
 
-./install-kyma-kind.sh
+./install-kyma.sh
