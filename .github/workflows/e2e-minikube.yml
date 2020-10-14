@@ -24,7 +24,7 @@ jobs:
         -v $PWD/registry:/var/lib/registry \
         registry:2
         echo "starting cluster"
-        minikube start --cpus=4 --memory=6800m --kubernetes-version=1.18.9 --insecure-registry="registry.localhost:5000"
+        minikube start --memory=6800m --kubernetes-version=1.18.9 --insecure-registry="registry.localhost:5000"
         minikube ssh "sudo sh -c \"grep host.minikube.internal /etc/hosts | sed s/host.minikube.internal/registry.localhost/ >>/etc/hosts\""
         echo "Installing helm"
         curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
