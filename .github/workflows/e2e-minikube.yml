@@ -29,8 +29,6 @@ jobs:
         echo "Installing helm"
         curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
         while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
     - name: Install Istio
       run: |
         ./install-istio.sh
@@ -46,7 +44,7 @@ jobs:
         sudo update-ca-certificates
     - name: Install Commerce Mock
       run: |
-        sudo minikube tunnel &
+        minikube tunnel &
         ./commerce-mock.sh
     # - name: Setup tmate session
     #   uses: mxschmitt/action-tmate@v3
