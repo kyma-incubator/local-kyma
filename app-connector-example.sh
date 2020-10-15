@@ -17,7 +17,7 @@ apiVersion: serverless.kyma-project.io/v1alpha1
 kind: Function
 metadata:
   labels:
-    serverless.kyma-project.io/build-resources-preset: slow
+    serverless.kyma-project.io/build-resources-preset: local-dev
     serverless.kyma-project.io/function-resources-preset: S
     serverless.kyma-project.io/replicas-preset: S
   name: lastorder
@@ -26,13 +26,6 @@ spec:
     {\"axios\": \"^0.19.2\"}\n}"
   maxReplicas: 1
   minReplicas: 1
-  resources:
-    limits:
-      cpu: 100m
-      memory: 128Mi
-    requests:
-      cpu: 50m
-      memory: 64Mi
   source: "let lastOrder = {};\n\nconst axios = require('axios');\n\nasync function
     getOrder(code) {\n    let url = process.env.GATEWAY_URL+\"/site/orders/\"+code;\n
     \   console.log(\"URL: %s\", url);\n    let response = await axios.get(url,{headers:{\"X-B3-Sampled\":1}})\n
