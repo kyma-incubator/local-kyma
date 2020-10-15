@@ -32,6 +32,9 @@ jobs:
     - name: Install Istio
       run: |
         ./install-istio.sh
+    - name: Minikube tunnel
+    run: |
+      ./minikube-tunnel.sh
     - name: Install Kyma
       env: 
         SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
@@ -44,7 +47,6 @@ jobs:
         sudo update-ca-certificates
     - name: Install Commerce Mock
       run: |
-        minikube tunnel &
         ./commerce-mock.sh
     # - name: Setup tmate session
     #   uses: mxschmitt/action-tmate@v3
