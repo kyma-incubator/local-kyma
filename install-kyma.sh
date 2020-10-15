@@ -1,7 +1,7 @@
 SECONDS=0  
 export DOMAIN=local.kyma.dev
 export OVERRIDES=global.isLocalEnv=false,global.ingress.domainName=$DOMAIN,global.environment.gardener=false,global.domainName=$DOMAIN,global.tlsCrt=ZHVtbXkK
-export ORY=global.ory.hydra.persistence.enabled=false,global.ory.hydra.persistence.postgresql.enabled=false,hydra.hydra.autoMigrate=false
+export ORY=global.ory.hydra.persistence.enabled=false,global.ory.hydra.persistence.postgresql.enabled=false,hydra.hydra.autoMigrate=false,hydra.deployment.resources.requests.cpu=10m,oathkeeper.deployment.resources.requests.cpu=10m
 # export REGISTRY_VALUES="dockerRegistry.username=$REGISTRY_USER,dockerRegistry.password=$REGISTRY_PASS,dockerRegistry.enableInternal=false,dockerRegistry.serverAddress=ghcr.io,dockerRegistry.registryAddress=ghcr.io/$REGISTRY_USER"       
 export REGISTRY_VALUES="dockerRegistry.enableInternal=false,dockerRegistry.serverAddress=registry.localhost:5000,dockerRegistry.registryAddress=registry.localhost:5000"
 
@@ -93,7 +93,7 @@ helm_install ory resources/ory kyma-system --set $OVERRIDES --set $ORY &
 helm_install api-gateway resources/api-gateway kyma-system --set $OVERRIDES & 
 
 helm_install rafter resources/rafter kyma-system --set $OVERRIDES &
-helm_install service-catalog resources/service-catalog kyma-system --set $OVERRIDES &
+helm_install service-catalog resources/service-catalog kyma-system --set $OVERRIDES --set catalog.webhook.resources.requests.cpu=10m,catalog.controllerManager.resources.requests.cpu=10m &
 helm_install service-catalog-addons resources/service-catalog-addons kyma-system --set $OVERRIDES &
 helm_install helm-broker resources/helm-broker kyma-system --set $OVERRIDES &
 
