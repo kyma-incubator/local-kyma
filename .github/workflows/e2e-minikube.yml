@@ -33,8 +33,8 @@ jobs:
       run: |
         ./install-istio.sh
     - name: Minikube tunnel
-    run: |
-      ./minikube-tunnel.sh
+      run: |
+        ./minikube-tunnel.sh
     - name: Install Kyma
       env: 
         SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
