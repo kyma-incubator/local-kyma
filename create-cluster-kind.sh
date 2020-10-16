@@ -47,5 +47,5 @@ docker network connect "kind" "registry.localhost"
 # tell https://tilt.dev to use the registry
 # https://docs.tilt.dev/choosing_clusters.html#discovering-the-registry
 for node in $(kind get nodes --name kyma); do
-  kubectl annotate node "${node}" "kind.x-k8s.io/registry=localhost:${reg_port}";
+  kubectl annotate node "${node}" "kind.x-k8s.io/registry=registry.localhost:${reg_port}";
 done
