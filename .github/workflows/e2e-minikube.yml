@@ -31,7 +31,7 @@ jobs:
         while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
     - name: Install Istio
       run: |
-        ./install-istio.sh
+        ./install-istio.sh -f config-istio.yaml
     - name: Minikube tunnel
       run: |
         ./minikube-tunnel.sh

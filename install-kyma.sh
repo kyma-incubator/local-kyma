@@ -88,9 +88,9 @@ helm_install testing resources/testing kyma-system
 
 helm_install ingress-dns-cert ingress-dns-cert istio-system --set $OVERRIDES &
 
-helm_install dex resources/dex kyma-system --set $OVERRIDES &
+helm_install dex resources/dex kyma-system --set $OVERRIDES --set resources.requests.cpu=10m &
 helm_install ory resources/ory kyma-system --set $OVERRIDES --set $ORY &
-helm_install api-gateway resources/api-gateway kyma-system --set $OVERRIDES & 
+helm_install api-gateway resources/api-gateway kyma-system --set $OVERRIDES --set deployment.resources.requests.cpu=10m & 
 
 helm_install rafter resources/rafter kyma-system --set $OVERRIDES &
 helm_install service-catalog resources/service-catalog kyma-system --set $OVERRIDES --set catalog.webhook.resources.requests.cpu=10m,catalog.controllerManager.resources.requests.cpu=10m &

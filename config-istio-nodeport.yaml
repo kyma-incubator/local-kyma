@@ -1,0 +1,53 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+spec:
+  addonComponents:
+    grafana:
+      enabled: false
+    istiocoredns:
+      enabled: false
+    kiali:
+      enabled: false
+    prometheus:
+      enabled: false
+    tracing:
+      enabled: false
+  components:
+    citadel:
+      enabled: false
+    cni:
+      enabled: false
+    egressGateways:
+    - enabled: false
+      name: istio-egressgateway
+    galley:
+      enabled: false
+    ingressGateways:
+    - enabled: true
+      k8s:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 40Mi
+        service:
+          type: NodePort
+        overlays:
+        - apiVersion: v1
+          kind: Service
+          name: istio-ingressgateway
+          patches:
+          - path: spec.ports
+            value:
+            - name: status-port
+              port: 15021
+              targetPort: 15021
+              nodePort: 30002
+            - name: http2
+              port: 80
+              targetPort: 80
+              nodePort: 30000
+            - name: https
+              port: 443
+              targetPort: 443
+              nodePort: 30001
+      name: istio-ingressgateway
