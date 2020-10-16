@@ -1,13 +1,7 @@
 #!/bin/sh
 set -o errexit
 
-# create registry container unless it already exists
-docker run -d \
--p 5000:5000 \
---restart=always \
---name registry.localhost \
--v $PWD/registry:/var/lib/registry \
-registry:2
+
 
 # create a cluster with the local registry enabled in containerd
 cat <<EOF | kind create cluster --name kyma --config=-
@@ -15,7 +9,7 @@ kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 containerdConfigPatches:
 - |-
-  [plugins."io.containerd.grpc.v1.cri".registry.mirrors."localhost:5000"]
+  [plugins."io.containerd.grpc.v1.cri".registry.mirrors."registry.localhost:5000"]
     endpoint = ["http://registry.localhost:5000"]
 nodes:
 - role: control-plane
@@ -41,8 +35,14 @@ nodes:
     listenAddress: "127.0.0.1"
 EOF
 
-# connect the registry to the cluster network
-docker network connect "kind" "registry.localhost"
+# create registry container unless it already exists
+docker run -d \
+-p 5000:5000 \
+--restart=always \
+--network=kind \
+--name registry.localhost \
+-v $PWD/registry:/var/lib/registry \
+registry:2
 
 # tell https://tilt.dev to use the registry
 # https://docs.tilt.dev/choosing_clusters.html#discovering-the-registry
