@@ -42,7 +42,7 @@ nodes:
 EOF
 
 # connect the registry to the cluster network
-docker network connect "kind" "${reg_name}"
+docker network connect "kind" "registry.localhost"
 
 # tell https://tilt.dev to use the registry
 # https://docs.tilt.dev/choosing_clusters.html#discovering-the-registry
