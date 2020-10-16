@@ -25,6 +25,10 @@ spec:
     ingressGateways:
     - enabled: true
       k8s:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 40Mi
         service:
           type: NodePort
         overlays:
