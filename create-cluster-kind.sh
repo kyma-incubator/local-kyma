@@ -2,23 +2,21 @@
 set -o errexit
 
 # create registry container unless it already exists
-reg_name='registry.localhost'
-reg_port='5000'
-running="$(docker inspect -f '{{.State.Running}}' "${reg_name}" 2>/dev/null || true)"
-if [ "${running}" != 'true' ]; then
-  # Start docker Registry
-  docker run -d \
-    -p "${reg_port}:5000" \
-    --restart=always \
-    --name "${reg_name}" \
-    -v $PWD/registry:/var/lib/registry \
-    registry:2
-fi
+docker run -d \
+-p 5000:5000 \
+--restart=always \
+--name registry.localhost \
+-v $PWD/registry:/var/lib/registry \
+registry:2
 
 # create a cluster with the local registry enabled in containerd
 cat <<EOF | kind create cluster --name kyma --config=-
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
+containerdConfigPatches:
+- |-
+  [plugins."io.containerd.grpc.v1.cri".registry.mirrors."localhost:5000"]
+    endpoint = ["http://registry.localhost:5000"]
 nodes:
 - role: control-plane
   kubeadmConfigPatches:
