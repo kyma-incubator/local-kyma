@@ -1,3 +1,6 @@
+#!/bin/bash
+set -o errexit
+
 SECONDS=0  
 export DOMAIN=local.kyma.dev
 export OVERRIDES=global.isLocalEnv=false,global.ingress.domainName=$DOMAIN,global.environment.gardener=false,global.domainName=$DOMAIN,global.tlsCrt=ZHVtbXkK
@@ -31,15 +34,21 @@ function helm_install() {
       break
     fi
     echo "Installing $1 in the namespace $namespace"    
+    set +e
     helm upgrade --wait -i $release $chart -n $namespace "${@:4}" 
+    set -e
   done
 }
+
+set +e
 # This file will be created by cert-manager (not needed anymore):
 rm resources/core/charts/gateway/templates/kyma-gateway-certs.yaml
 
 # apiserver-proxy dependencies are not required (cannot be disabled by values yet):
 rm resources/apiserver-proxy/requirements.yaml
 rm -R resources/apiserver-proxy/charts
+
+set -e 
 
 # Create namespaces
 cat <<EOF | kubectl apply -f - 

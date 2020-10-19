@@ -1,7 +1,5 @@
-#!/bin/sh
+#!/bin/bash
 set -o errexit
-
-
 
 # create a cluster with the local registry enabled in containerd
 cat <<EOF | kind create cluster --name kyma --config=-
@@ -35,7 +33,7 @@ nodes:
     listenAddress: "127.0.0.1"
 EOF
 
-# create registry container unless it already exists
+# Start docker Registry
 docker run -d \
 -p 5000:5000 \
 --restart=always \
