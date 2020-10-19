@@ -1,0 +1,58 @@
+  Namespace                   Name                                                               CPU Requests  CPU Limits    Memory Requests  Memory Limits  AGE
+  ---------                   ----                                                               ------------  ----------    ---------------  -------------  ---
+  istio-system                istio-ingressgateway-8448d8d6c8-hhknt                              100m (5%)     2 (100%)      128Mi (1%)       1Gi (14%)      8m13s
+  istio-system                istiod-749c4cf7f8-4gcht                                            10m (0%)      0 (0%)        100Mi (1%)       0 (0%)         9m
+  knative-eventing            eventing-controller-8559b78bcc-ftgqn                               100m (5%)     200m (10%)    100Mi (1%)       200Mi (2%)     5m38s
+  knative-eventing            eventing-webhook-76cc9c8cfb-wht6n                                  20m (1%)      200m (10%)    20Mi (0%)        200Mi (2%)     5m38s
+  knative-eventing            natss-ch-controller-99449c7db-kzknh                                0 (0%)        0 (0%)        0 (0%)           0 (0%)         5m58s
+  knative-eventing            natss-ch-dispatcher-5df4cdc9db-7ckqh                               10m (0%)      2 (100%)      40Mi (0%)        1Gi (14%)      5m58s
+  knative-eventing            sources-controller-79c9cb769b-j29vk                                100m (5%)     200m (10%)    100Mi (1%)       200Mi (2%)     5m38s
+  kube-system                 coredns-66bff467f8-jlq7r                                           100m (5%)     0 (0%)        70Mi (1%)        170Mi (2%)     9m19s
+  kube-system                 coredns-66bff467f8-zt2dl                                           100m (5%)     0 (0%)        70Mi (1%)        170Mi (2%)     9m19s
+  kube-system                 etcd-kyma-control-plane                                            0 (0%)        0 (0%)        0 (0%)           0 (0%)         9m37s
+  kube-system                 kindnet-8tq8f                                                      100m (5%)     100m (5%)     50Mi (0%)        50Mi (0%)      9m19s
+  kube-system                 kube-apiserver-kyma-control-plane                                  250m (12%)    0 (0%)        0 (0%)           0 (0%)         9m37s
+  kube-system                 kube-controller-manager-kyma-control-plane                         200m (10%)    0 (0%)        0 (0%)           0 (0%)         9m37s
+  kube-system                 kube-proxy-n6pl8                                                   0 (0%)        0 (0%)        0 (0%)           0 (0%)         9m19s
+  kube-system                 kube-scheduler-kyma-control-plane                                  100m (5%)     0 (0%)        0 (0%)           0 (0%)         9m37s
+  kyma-integration            application-broker-8778dff47-5kfrn                                 90m (4%)      2100m (105%)  64Mi (0%)        1100Mi (15%)   5m21s
+  kyma-integration            application-operator-0                                             100m (5%)     100m (5%)     128Mi (1%)       256Mi (3%)     5m21s
+  kyma-integration            application-registry-7578bf44d8-hrztq                              10m (0%)      2 (100%)      72Mi (1%)        1120Mi (16%)   5m21s
+  kyma-integration            commerce-5d56669b6b-ggcpr                                          10m (0%)      2 (100%)      72Mi (1%)        1120Mi (16%)   73s
+  kyma-integration            commerce-application-gateway-8474964d45-26j6t                      110m (5%)     2 (100%)      72Mi (1%)        1120Mi (16%)   77s
+  kyma-integration            commerce-connectivity-validator-649f78b849-r7l5l                   10m (0%)      2 (100%)      72Mi (1%)        1120Mi (16%)   77s
+  kyma-integration            commerce-event-service-c845fbd8d-2qzw8                             10m (0%)      2 (100%)      72Mi (1%)        1120Mi (16%)   77s
+  kyma-integration            connection-token-handler-7bfb7cc9fb-6rxl6                          10m (0%)      2 (100%)      72Mi (1%)        1120Mi (16%)   5m21s
+  kyma-integration            connector-service-5c5c5989cd-v78sv                                 10m (0%)      2 (100%)      72Mi (1%)        1120Mi (16%)   5m21s
+  kyma-system                 api-gateway-585b45775d-65wrx                                       50m (2%)      100m (5%)     64Mi (0%)        128Mi (1%)     5m42s
+  kyma-system                 core-content-ui-5444745496-7lqjv                                   0 (0%)        0 (0%)        0 (0%)           0 (0%)         5m34s
+  kyma-system                 dex-7d64b6b669-grvrf                                               60m (3%)      2100m (105%)  56Mi (0%)        1152Mi (16%)   5m54s
+  kyma-system                 event-sources-controller-manager-78bf8cc649-lf98h                  10m (0%)      0 (0%)        50Mi (0%)        0 (0%)         6m5s
+  kyma-system                 ory-hydra-68959b9f68-969l8                                         20m (1%)      2500m (125%)  168Mi (2%)       1280Mi (18%)   5m25s
+  kyma-system                 ory-hydra-maester-59975f54ff-fk9kf                                 10m (0%)      2 (100%)      40Mi (0%)        1Gi (14%)      5m25s
+  kyma-system                 ory-oathkeeper-59d9b9c89f-4bmxw                                    70m (3%)      2200m (110%)  124Mi (1%)       1202Mi (17%)   5m25s
+  kyma-system                 pod-preset-webhook-5c64975bb6-k8qjb                                0 (0%)        0 (0%)        0 (0%)           0 (0%)         6m31s
+  kyma-system                 rafter-asyncapi-svc-5d597cf779-rrmpk                               0 (0%)        0 (0%)        0 (0%)           0 (0%)         5m35s
+  kyma-system                 rafter-ctrl-mngr-6cb457b464-lfhvq                                  10m (0%)      150m (7%)     32Mi (0%)        128Mi (1%)     5m35s
+  kyma-system                 rafter-front-matter-svc-7578f7fbbd-v5l62                           0 (0%)        0 (0%)        0 (0%)           0 (0%)         5m35s
+  kyma-system                 rafter-minio-655b57b98f-pgjv4                                      10m (0%)      250m (12%)    32Mi (0%)        256Mi (3%)     5m35s
+  kyma-system                 rafter-upload-svc-6cfd47d948-4wlnj                                 0 (0%)        0 (0%)        0 (0%)           0 (0%)         5m35s
+  kyma-system                 serverless-ctrl-mngr-7ff767549c-92btz                              10m (0%)      100m (5%)     32Mi (0%)        126Mi (1%)     5m40s
+  kyma-system                 serverless-webhook-svc-59f764fd9-2rgf2                             30m (1%)      300m (15%)    50Mi (0%)        300Mi (4%)     5m39s
+  kyma-system                 service-catalog-addons-service-binding-usage-controller-7fx27np    40m (2%)      2050m (102%)  64Mi (0%)        1100Mi (15%)   5m40s
+  kyma-system                 service-catalog-addons-service-catalog-ui-c8b468848-6wsct          0 (0%)        0 (0%)        0 (0%)           0 (0%)         5m40s
+  kyma-system                 service-catalog-catalog-controller-manager-84d4568bcd-nckbx        20m (1%)      2100m (105%)  75Mi (1%)        1152Mi (16%)   5m38s
+  kyma-system                 service-catalog-catalog-webhook-6546d7f77b-xlg7w                   20m (1%)      2100m (105%)  60Mi (0%)        1054Mi (15%)   5m38s
+  local-path-storage          local-path-provisioner-5b4b545c55-69zg2                            0 (0%)        0 (0%)        0 (0%)           0 (0%)         9m19s
+  mocks                       commerce-mock-5d99bb8dfd-2cssm                                     60m (3%)      2300m (114%)  190Mi (2%)       1374Mi (19%)   2m52s
+  natss                       nats-streaming-0                                                   0 (0%)        0 (0%)        256M (3%)        256M (3%)      5m27s
+A
+
+  Type     Reason     Age                 From               Message
+  ----     ------     ----                ----               -------
+  Normal   Scheduled  105s                default-scheduler  Successfully assigned default/lastorder-bsxjd-5477775fc9-rsvsp to kyma-control-plane
+  Normal   Pulling    14s (x4 over 104s)  kubelet            Pulling image "registry.localhost:5000/default-lastorder:cb0a57e7a668228df37deccd85537397608fb65743b002fca9312a40cc30d651"
+  Warning  Failed     14s (x4 over 103s)  kubelet            Failed to pull image "registry.localhost:5000/default-lastorder:cb0a57e7a668228df37deccd85537397608fb65743b002fca9312a40cc30d651": rpc error: code = Unknown desc = failed to pull and unpack image "registry.localhost:5000/default-lastorder:cb0a57e7a668228df37deccd85537397608fb65743b002fca9312a40cc30d651": failed to resolve reference "registry.localhost:5000/default-lastorder:cb0a57e7a668228df37deccd85537397608fb65743b002fca9312a40cc30d651": failed to do request: Head https://registry.localhost:5000/v2/default-lastorder/manifests/cb0a57e7a668228df37deccd85537397608fb65743b002fca9312a40cc30d651: http: server gave HTTP response to HTTPS client
+  Warning  Failed     14s (x4 over 103s)  kubelet            Error: ErrImagePull
+  Normal   BackOff    3s (x6 over 103s)   kubelet            Back-off pulling image "registry.localhost:5000/default-lastorder:cb0a57e7a668228df37deccd85537397608fb65743b002fca9312a40cc30d651"
+  Warning  Failed     3s (x6 over 103s)   kubelet            Error: ImagePullBackOff

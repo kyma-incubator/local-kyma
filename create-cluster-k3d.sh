@@ -28,6 +28,4 @@ k3d cluster create kyma \
     --switch-context \
     --timeout 60s 
 
-# Delete cluster with keep-registry-volume to cache docker images
-# k3d cluster delete kyma
 echo "Cluster created in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"

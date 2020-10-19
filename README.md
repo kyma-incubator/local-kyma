@@ -1,10 +1,9 @@
 ![Tests on k3s](https://github.com/kyma-incubator/local-kyma-k3d/workflows/Tests%20on%20k3s/badge.svg) ![Tests on minikube](https://github.com/kyma-incubator/local-kyma-k3d/workflows/Tests%20on%20minikube/badge.svg) ![Tests on kind](https://github.com/kyma-incubator/local-kyma-k3d/workflows/Tests%20on%20kind/badge.svg)
 
 # Overview
-This repository contains scripts to start Kyma on local K3S cluster in about 5 minutes!
+This repository contains scripts to start Kyma on local kubernetes cluster (k3s) in about 5 minutes! 
 
 > Tested on Mac Book Pro 2017 (2,9 GHz Quad-Core Intel Core i7, 16 GB RAM, SSD disk)
-
 
 # Prerequisites
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
@@ -15,8 +14,8 @@ This repository contains scripts to start Kyma on local K3S cluster in about 5 m
 
 Checkout this repository and go to the main folder:
 ```
-git clone git@github.com:kyma-incubator/local-kyma-k3d.git
-cd local-kyma-k3d
+git clone git@github.com:kyma-incubator/local-kyma.git
+cd local-kyma
 ```
 
 Download kyma charts to resources subfolder:
@@ -40,7 +39,7 @@ Your cluster is ready!
 
 ![asciicast](local-kyma-k3d.gif)
 
-# Clean up
+When you are done you can clean up with this command:
 
 ```
 ./kyma-k3d-delete.sh
@@ -108,7 +107,7 @@ Please bear in mind that after restart Kubernetes will probably restart most of 
 
 ## Can I use the script on Linux or Windows
 
-The script was tested only on Mac OS. It should not be a big problem to adapt it to Linux, but it wasn't tested there. There is a plan to move the script to Kyma CLI - once it is done all platforms will be supported.
+The script was tested only on Mac OS and Linux. For . There is a plan to move the script to Kyma CLI - once it is done all platforms will be supported.
 
 ---
 ## Why not minikube?
