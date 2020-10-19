@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+set -e
 
 # Instal istio
 if [[ ! -f istio-1.5.10/bin/istioctl ]]; then
