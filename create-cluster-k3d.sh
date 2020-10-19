@@ -1,8 +1,11 @@
+#!/bin/sh
+set -o errexit
+
 SECONDS=0  
 REGISTRY_CONFIG=${1:-registries.yaml}
 
 # Create docker network
-docker network create k3d-kyma
+docker network create k3d-kyma || echo "k3d-kyma network already exists"
 
 # Start docker Registry
 docker run -d \
