@@ -1,5 +1,4 @@
 #!/bin/sh
-set -o errexit
 
 # Instal istio
 if [[ ! -f istio-1.5.10/bin/istioctl ]]; then
