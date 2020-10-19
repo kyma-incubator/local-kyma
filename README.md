@@ -107,12 +107,29 @@ Please bear in mind that after restart Kubernetes will probably restart most of 
 
 ## Can I use the script on Linux or Windows
 
-The script was tested only on Mac OS and Linux. For . There is a plan to move the script to Kyma CLI - once it is done all platforms will be supported.
+The script was tested only on Mac OS and Linux (ubuntu). Please be aware that for Linux you should use k3s (not k3d) version of create cluster script. It should also work with Windows Linux Subsystem (WSL 2), but I didn't test it yet. 
 
 ---
-## Why not minikube?
+## I see k3s, k3d, kind and minikube - what should I use?
 
-K3S starts in about 10 seconds - you can use kubeconfig and access API server. It also takes fewer resources than minikube. For the local development, speed and low resource consumption are critical requirements.
+Short answer: k3d (Mac Os) or k3s (Linux, WSL).
+
+Long answer:
+
+K3d is a docker wrapper around k3s (which runs on linux only) - it is more or less the same. Here is a small comparison with kind and minikube:
+
+|   | k3s/k3d | minikube | kind |
+----|:-------:|:--------:|:----:|
+K8s installation + startup time | ~ 25 sec  | ~ 90 sec | ~ 100 sec 
+Cluster startup time (second run) | ~ 15 sec  | ~ 30 sec | ~ 30 sec 
+Allocated memory (e2e scenario) | 4.2 GB | 6.6 GB | 6.8 GB 
+Kyma installation time | ~ 3 min | ~ 5-6 min | ~ 4-5 min 
+LoadBalancer support | yes | yes/no (requires another process for minikube tunnel command) | no 
+Expose LB ports on host machine (use localhost) | yes | yes(mac) / no(linux)  | yes/no (extraPortMappings to service exposed with NodePort) 
+
+Summary: if you pick minikube or kind you need 50% more resources, 50% more time for cluster startup or Kyma installation and you need a special configuration or process to access ingress gateway from your localhost.
+
+**A winner is: k3s/k3d!**
 
 ---
 ## What are the hardware requirements to run Kyma locally?
