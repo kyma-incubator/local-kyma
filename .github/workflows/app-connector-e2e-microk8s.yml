@@ -1,0 +1,42 @@
+name: Tests on kind
+
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  schedule:
+    - cron: '0 * * * *' # every hour
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare docker registry, microk8s & helm 3
+      run: |
+        echo "Installing microk8s"
+        sudo snap install microk8s --classic
+        echo "Starting microk8s cluster"
+        ./create-cluster-microk8s.sh
+        echo "Installing helm"
+        curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+    - name: Install Istio
+      run: |
+        ./install-istio.sh -f config-istio.yaml
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
+    - name: Install Kyma
+      env: 
+        SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
+      run: |
+        ./download-kyma-charts.sh
+        ./install-kyma.sh
+        sudo cp kyma.crt /usr/local/share/ca-certificates
+        sudo update-ca-certificates
+    - name: Install Commerce Mock
+      run: |
+        ./commerce-mock.sh
+    - name: Run End To End Test
+      run: |
+        ./app-connector-example.sh
