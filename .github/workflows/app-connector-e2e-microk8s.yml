@@ -20,6 +20,7 @@ jobs:
         echo "Installing microk8s"
         sudo snap install microk8s --classic --channel=1.18
         sudo usermod -a -G microk8s runner
+        mkdir -p ~/.kube
         sudo chown -f -R runner ~/.kube
     - name: Prepare docker registry, microk8s & helm 3
       run: |
