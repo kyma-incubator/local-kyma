@@ -13,8 +13,6 @@ jobs:
     timeout-minutes: 15
     steps:
     - uses: actions/checkout@v2
-    # - name: Setup tmate session
-    #   uses: mxschmitt/action-tmate@v3
     - name: install microk8s
       run: |
         echo "Installing microk8s"
@@ -30,8 +28,8 @@ jobs:
     - name: Install Istio
       run: |
         ./install-istio.sh -f config-istio.yaml
-    # - name: Setup tmate session
-    #   uses: mxschmitt/action-tmate@v3
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
     - name: Install Kyma
       env: 
         SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,logging,tracing
