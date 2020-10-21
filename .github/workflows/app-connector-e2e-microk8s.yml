@@ -27,11 +27,11 @@ jobs:
         echo "Starting microk8s cluster"
         ./create-cluster-microk8s.sh
         microk8s config > ~/.kube/config
+        sudo usermod --append --groups microk8s $USER
         echo "Installing helm"
         curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
     - name: Install Istio
       run: |
-        microk8s config > ~/.kube/config
         ./install-istio.sh -f config-istio.yaml
     # - name: Setup tmate session
     #   uses: mxschmitt/action-tmate@v3
@@ -39,16 +39,13 @@ jobs:
       env: 
         SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,logging,tracing
       run: |
-        microk8s config > ~/.kube/config
         ./download-kyma-charts.sh
         ./install-kyma.sh
         sudo cp kyma.crt /usr/local/share/ca-certificates
         sudo update-ca-certificates
     - name: Install Commerce Mock
       run: |
-        microk8s config > ~/.kube/config
         ./commerce-mock.sh
     - name: Run End To End Test
       run: |
-        microk8s config > ~/.kube/config
         ./app-connector-example.sh
