@@ -33,14 +33,19 @@ jobs:
     - name: Install Kyma
       env: 
         SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
+        KUBECONFIG: ~/.kube/config
       run: |
         ./download-kyma-charts.sh
         ./install-kyma.sh
         sudo cp kyma.crt /usr/local/share/ca-certificates
         sudo update-ca-certificates
     - name: Install Commerce Mock
+      env:
+        KUBECONFIG: ~/.kube/config
       run: |
         ./commerce-mock.sh
     - name: Run End To End Test
+      env:
+        KUBECONFIG: ~/.kube/config
       run: |
         ./app-connector-example.sh
