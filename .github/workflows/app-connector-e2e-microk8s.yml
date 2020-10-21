@@ -19,15 +19,11 @@ jobs:
       run: |
         echo "Installing microk8s"
         sudo snap install microk8s --classic --channel=1.18
-        sudo usermod -a -G microk8s runner
-        mkdir -p ~/.kube
-        sudo chown -f -R runner ~/.kube
+        sudo usermod --append --groups microk8s $USER
     - name: Prepare docker registry, microk8s & helm 3
       run: |
         echo "Starting microk8s cluster"
         ./create-cluster-microk8s.sh
-        microk8s config > ~/.kube/config
-        sudo usermod --append --groups microk8s $USER
         echo "Installing helm"
         curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
     - name: Install Istio
