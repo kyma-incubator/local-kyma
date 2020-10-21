@@ -1,8 +1,5 @@
 SECONDS=0  
 
-sudo usermod -a -G microk8s runner
-sudo chown -f -R runner ~/.kube
-
 microk8s install --channel=1.18
 
 microk8s enable dns

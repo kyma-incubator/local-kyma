@@ -15,10 +15,14 @@ jobs:
     - uses: actions/checkout@v2
     # - name: Setup tmate session
     #   uses: mxschmitt/action-tmate@v3
-    - name: Prepare docker registry, microk8s & helm 3
+    - name: install microk8s
       run: |
         echo "Installing microk8s"
-        sudo snap install microk8s --classic
+        sudo snap install microk8s --classic --channel=1.18
+        sudo usermod -a -G microk8s runner
+        sudo chown -f -R runner ~/.kube
+    - name: Prepare docker registry, microk8s & helm 3
+      run: |
         echo "Starting microk8s cluster"
         ./create-cluster-microk8s.sh
         echo "Installing helm"
