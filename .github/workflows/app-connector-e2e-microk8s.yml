@@ -13,8 +13,8 @@ jobs:
     timeout-minutes: 15
     steps:
     - uses: actions/checkout@v2
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
     - name: Prepare docker registry, microk8s & helm 3
       run: |
         echo "Installing microk8s"
