@@ -24,6 +24,8 @@ jobs:
         echo "Installing helm"
         curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
     - name: Install Istio
+      env:
+        KUBECONFIG: ~/.kube/config
       run: |
         ./install-istio.sh -f config-istio.yaml
     # - name: Setup tmate session
