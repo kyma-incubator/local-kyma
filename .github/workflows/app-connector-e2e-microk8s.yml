@@ -18,6 +18,7 @@ jobs:
     - name: install microk8s
       run: |
         echo "Installing microk8s"
+        mkdir -p ~/.kube
         sudo snap install microk8s --classic --channel=1.18
         sudo usermod --append --groups microk8s $USER
     - name: Prepare docker registry, microk8s & helm 3
