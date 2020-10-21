@@ -1,7 +1,5 @@
 SECONDS=0  
 
-microk8s install --channel=1.18
-
 microk8s enable dns
 
 microk8s status --wait-ready
