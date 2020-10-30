@@ -2,8 +2,12 @@ name: Tests on k3s
 
 on: 
   push:
+    branches:
+      - main
   pull_request:
     types: [opened, synchronize, reopened]
+    branches:
+      - main
   schedule:
     - cron: '0 * * * *' # every hour
 

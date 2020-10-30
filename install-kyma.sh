@@ -2,11 +2,14 @@
 set -o errexit
 
 SECONDS=0  
-export DOMAIN=local.kyma.dev
-export OVERRIDES=global.isLocalEnv=false,global.ingress.domainName=$DOMAIN,global.environment.gardener=false,global.domainName=$DOMAIN,global.tlsCrt=ZHVtbXkK
+GARDENER=${GARDENER:-false}
+export DOMAIN=${KYMA_DOMAIN:-local.kyma.dev}
+export OVERRIDES=global.isLocalEnv=false,global.ingress.domainName=$DOMAIN,global.environment.gardener=$GARDENER,global.domainName=$DOMAIN,global.tlsCrt=ZHVtbXkK
 export ORY=global.ory.hydra.persistence.enabled=false,global.ory.hydra.persistence.postgresql.enabled=false,hydra.hydra.autoMigrate=false,hydra.deployment.resources.requests.cpu=10m,oathkeeper.deployment.resources.requests.cpu=10m
 # export REGISTRY_VALUES="dockerRegistry.username=$REGISTRY_USER,dockerRegistry.password=$REGISTRY_PASS,dockerRegistry.enableInternal=false,dockerRegistry.serverAddress=ghcr.io,dockerRegistry.registryAddress=ghcr.io/$REGISTRY_USER"       
-export REGISTRY_VALUES="dockerRegistry.enableInternal=false,dockerRegistry.serverAddress=registry.localhost:5000,dockerRegistry.registryAddress=registry.localhost:5000"
+if [[ -z $REGISTRY_VALUES ]]; then
+  export REGISTRY_VALUES="dockerRegistry.enableInternal=false,dockerRegistry.serverAddress=registry.localhost:5000,dockerRegistry.registryAddress=registry.localhost:5000"
+fi
 
 # Wait until number of background jobs is less than $1, try every $2 second(s)
 function waitForJobs() {
@@ -45,8 +48,8 @@ set +e
 rm resources/core/charts/gateway/templates/kyma-gateway-certs.yaml
 
 # apiserver-proxy dependencies are not required (cannot be disabled by values yet):
-rm resources/apiserver-proxy/requirements.yaml
-rm -R resources/apiserver-proxy/charts
+# rm resources/apiserver-proxy/requirements.yaml
+# rm -R resources/apiserver-proxy/charts
 
 set -e 
 
@@ -94,23 +97,23 @@ kubectl -n kube-system patch cm coredns --patch "$(cat coredns-patch.yaml)"
 kubectl apply -f resources/cluster-essentials/files -n kyma-system 
 helm_install pod-preset resources/cluster-essentials/charts/pod-preset kyma-system 
 helm_install testing resources/testing kyma-system 
-
-helm_install ingress-dns-cert ingress-dns-cert istio-system --set $OVERRIDES &
+helm_install ingress-dns-cert ingress-dns-cert istio-system --set global.ingress.domainName=$DOMAIN,global.environment.gardener=$GARDENER &
 
 helm_install dex resources/dex kyma-system --set $OVERRIDES --set resources.requests.cpu=10m &
 helm_install ory resources/ory kyma-system --set $OVERRIDES --set $ORY &
 helm_install api-gateway resources/api-gateway kyma-system --set $OVERRIDES --set deployment.resources.requests.cpu=10m & 
 
 helm_install rafter resources/rafter kyma-system --set $OVERRIDES &
+
 helm_install service-catalog resources/service-catalog kyma-system --set $OVERRIDES --set catalog.webhook.resources.requests.cpu=10m,catalog.controllerManager.resources.requests.cpu=10m &
 helm_install service-catalog-addons resources/service-catalog-addons kyma-system --set $OVERRIDES &
-helm_install helm-broker resources/helm-broker kyma-system --set $OVERRIDES &
+# helm_install helm-broker resources/helm-broker kyma-system --set $OVERRIDES &
 
-helm_install core resources/core kyma-system --set $OVERRIDES&
+helm_install core resources/core kyma-system --set $OVERRIDES &
 helm_install console resources/console kyma-system --set $OVERRIDES &
 helm_install cluster-users resources/cluster-users kyma-system --set $OVERRIDES &
-helm_install apiserver-proxy resources/apiserver-proxy kyma-system --set $OVERRIDES &
-helm_install serverless resources/serverless kyma-system --set $REGISTRY_VALUES &
+# helm_install apiserver-proxy resources/apiserver-proxy kyma-system --set $OVERRIDES &
+helm_install serverless resources/serverless kyma-system --set $REGISTRY_VALUES,global.ingress.domainName=$DOMAIN &
 helm_install logging resources/logging kyma-system --set $OVERRIDES &
 helm_install tracing resources/tracing kyma-system --set $OVERRIDES &
 
