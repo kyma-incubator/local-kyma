@@ -27,10 +27,10 @@ spec:
               nodePort: 30002
             - name: http2
               port: 80
-              targetPort: 80
+              targetPort: 8080
               nodePort: 30000
             - name: https
               port: 443
-              targetPort: 443
+              targetPort: 8443
               nodePort: 30001
       name: istio-ingressgateway
