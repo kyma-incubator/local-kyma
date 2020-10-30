@@ -31,7 +31,7 @@ jobs:
       env: 
         SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
       run: |
-        ./download-kyma-charts.sh
+        ./download-kyma-charts.sh colunira/kyma istio/istio-1.7
         IP=$(minikube ssh "grep host.minikube.internal /etc/hosts | cut -f1") 
         export REGISTRY_IP=${IP//[$'\t\r\n ']}
         ./install-kyma.sh

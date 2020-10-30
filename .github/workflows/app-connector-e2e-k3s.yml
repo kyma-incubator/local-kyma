@@ -2,8 +2,12 @@ name: Tests on k3s
 
 on: 
   push:
+    branches:
+      - main
   pull_request:
     types: [opened, synchronize, reopened]
+    branches:
+      - main
   schedule:
     - cron: '0 * * * *' # every hour
 
@@ -26,7 +30,7 @@ jobs:
       env: 
         SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
       run: |
-        ./download-kyma-charts.sh
+        ./download-kyma-charts.sh colunira/kyma istio/istio-1.7
         ./install-kyma.sh
         sudo cp kyma.crt /usr/local/share/ca-certificates
         sudo update-ca-certificates
