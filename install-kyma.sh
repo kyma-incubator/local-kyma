@@ -119,7 +119,7 @@ helm_install nats-streaming resources/nats-streaming natss &
 helm_install event-sources resources/event-sources kyma-system &
 
 # Create installer deployment scaled to 0 to get console running:
-# kubectl apply -f installer-local.yaml &
+kubectl apply -f installer-local.yaml &
 
 # Wait for jobs - helm commands executed in the background
 waitForJobs 0 5
