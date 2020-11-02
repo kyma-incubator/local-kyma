@@ -38,7 +38,7 @@ function helm_install() {
     fi
     echo "Installing $1 in the namespace $namespace"    
     set +e
-    helm upgrade --wait -i $release $chart -n $namespace "${@:4}" 
+    helm upgrade --atomic -i $release $chart -n $namespace "${@:4}" 
     set -e
   done
 }
@@ -46,10 +46,6 @@ function helm_install() {
 set +e
 # This file will be created by cert-manager (not needed anymore):
 rm resources/core/charts/gateway/templates/kyma-gateway-certs.yaml
-
-# apiserver-proxy dependencies are not required (cannot be disabled by values yet):
-# rm resources/apiserver-proxy/requirements.yaml
-# rm -R resources/apiserver-proxy/charts
 
 set -e 
 
@@ -96,7 +92,6 @@ kubectl -n kube-system patch cm coredns --patch "$(cat coredns-patch.yaml)"
 
 kubectl apply -f resources/cluster-essentials/files -n kyma-system 
 helm_install pod-preset resources/cluster-essentials/charts/pod-preset kyma-system 
-helm_install testing resources/testing kyma-system 
 helm_install ingress-dns-cert ingress-dns-cert istio-system --set global.ingress.domainName=$DOMAIN,global.environment.gardener=$GARDENER &
 
 helm_install dex resources/dex kyma-system --set $OVERRIDES --set resources.requests.cpu=10m &
@@ -112,7 +107,6 @@ helm_install service-catalog-addons resources/service-catalog-addons kyma-system
 helm_install core resources/core kyma-system --set $OVERRIDES &
 helm_install console resources/console kyma-system --set $OVERRIDES &
 helm_install cluster-users resources/cluster-users kyma-system --set $OVERRIDES &
-# helm_install apiserver-proxy resources/apiserver-proxy kyma-system --set $OVERRIDES &
 helm_install serverless resources/serverless kyma-system --set $REGISTRY_VALUES,global.ingress.domainName=$DOMAIN &
 helm_install logging resources/logging kyma-system --set $OVERRIDES &
 helm_install tracing resources/tracing kyma-system --set $OVERRIDES &
@@ -125,7 +119,7 @@ helm_install nats-streaming resources/nats-streaming natss &
 helm_install event-sources resources/event-sources kyma-system &
 
 # Create installer deployment scaled to 0 to get console running:
-kubectl apply -f installer-local.yaml &
+# kubectl apply -f installer-local.yaml &
 
 # Wait for jobs - helm commands executed in the background
 waitForJobs 0 5
