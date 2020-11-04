@@ -15,7 +15,9 @@ on:
         description: 'Shoot cluster name'
         required: true
         default: 'ci'
-
+  schedule:
+    - cron: '0 * * * *' # every hour
+      
 jobs:
   build:
     runs-on: ubuntu-latest
