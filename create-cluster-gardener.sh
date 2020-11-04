@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo $GARDEN_KUBECONFIG | base64 -D  > ./garden-kubeconfig.yaml
+echo $GARDEN_KUBECONFIG | base64 --decode  > ./garden-kubeconfig.yaml
 export SHOOT_NAME=${SHOOT_NAME:-c$(date +"%d%H%M%S")}
 
 cat <<EOF | kubectl --kubeconfig ./garden-kubeconfig.yaml apply -f - 
