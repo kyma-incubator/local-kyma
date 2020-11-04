@@ -85,5 +85,9 @@ spec:
     name: commerce-mock
     port: 10000
 EOF
+
+MOCK_HOST=""
+while [[ -z $MOCK_HOST ]]; do echo "waiting for mock host"; MOCK_HOST=$(kubectl get virtualservice -n mocks -ojsonpath='{.items[0].spec.hosts[0]}'); sleep 3; done
+
 MOCK_PROVIDER=""
-while [[ -z $MOCK_PROVIDER ]]; do echo "waiting for commerce mock to be ready"; MOCK_PROVIDER=$(curl -sk https://commerce.local.kyma.dev/local/apis |jq -r '.[0].provider'); curl -ik "https://commerce.local.kyma.dev/local/apis" ; sleep 5; done
+while [[ -z $MOCK_PROVIDER ]]; do echo "waiting for commerce mock to be ready"; MOCK_PROVIDER=$(curl -sk https://$MOCK_HOST/local/apis |jq -r '.[0].provider') ; sleep 5; done
