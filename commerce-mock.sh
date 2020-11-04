@@ -1,3 +1,5 @@
+DOMAIN=${KYMA_DOMAIN:-local.kyma.dev}
+
 cat <<EOF |kubectl apply -f -
 apiVersion: v1
 kind: Namespace
@@ -86,4 +88,4 @@ spec:
     port: 10000
 EOF
 MOCK_PROVIDER=""
-while [[ -z $MOCK_PROVIDER ]]; do echo "waiting for commerce mock to be ready"; MOCK_PROVIDER=$(curl -sk https://commerce.local.kyma.dev/local/apis |jq -r '.[0].provider'); curl -ik "https://commerce.local.kyma.dev/local/apis" ; sleep 5; done
+while [[ -z $MOCK_PROVIDER ]]; do echo "waiting for commerce mock to be ready"; MOCK_PROVIDER=$(curl -sk https://commerce.$DOMAIN/local/apis |jq -r '.[0].provider') ; sleep 5; done

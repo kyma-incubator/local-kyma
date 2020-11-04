@@ -118,6 +118,9 @@ helm_install knative-provisioner-natss resources/knative-provisioner-natss knati
 helm_install nats-streaming resources/nats-streaming natss &
 helm_install event-sources resources/event-sources kyma-system &
 
+# helm_install kiali resources/kiali kyma-system --set global.ingress.domainName=$DOMAIN &
+# helm_install monitoring resources/monitoring kyma-system --set global.ingress.domainName=$DOMAIN &
+
 # Create installer deployment scaled to 0 to get console running:
 kubectl apply -f installer-local.yaml &
 
