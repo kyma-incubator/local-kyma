@@ -11,6 +11,14 @@ kubectl delete MutatingWebhookConfiguration sinkbindings.webhook.sources.knative
 kubectl delete apirules --all -A
 kubectl delete rules.oathkeeper.ory.sh --all -A
 kubectl delete secret -n istio-system kyma-gateway-certs-cacert
+kubectl delete ServiceBindingUsage --all -A
+kubectl delete ServiceBinding --all -A
+kubectl delete ServiceInstance --all -A
+kubectl delete function --all -A
+kubectl delete ApplicationMapping --all -A
+kubectl delete Application --all -A
+kubectl delete deployment --all
+kubectl delete service --all
 
 helm ls -A -ojson | jq -r '.[] | "helm delete \(.name) -n \(.namespace)"' | while read -r line; do bash -c "$line" ; done
 
