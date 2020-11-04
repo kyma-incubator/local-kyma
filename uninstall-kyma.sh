@@ -24,7 +24,7 @@ kubectl delete clusterbuckets.rafter.kyma-project.io --all &
 
 helm ls -A -ojson | jq -r '.[] | "helm delete \(.name) -n \(.namespace)"' | while read -r line; do bash -c "$line" ; done
 
-kubectl delete -f resources/cluster-essentials/files -n kyma-system 
+kubectl delete -f resources/cluster-essentials/files -n kyma-system &
 
 # Delete namespaces
 kubectl delete ns kyma-system &
