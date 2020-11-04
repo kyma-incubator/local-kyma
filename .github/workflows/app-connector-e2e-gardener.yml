@@ -1,21 +1,20 @@
 name: Tests on Gardener
 
 on: 
-  on:
-    workflow_dispatch:
-      inputs:
-        repository:
-          description: 'Repository'
-          required: true
-          default: 'kyma-project/kyma'
-        branch:
-          description: 'Branch'
-          required: true
-          default: 'master'
-        shoot:
-          description: 'Shoot cluster name'
-          required: true
-          default: 'ci'
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: 'Repository'
+        required: true
+        default: 'kyma-project/kyma'
+      branch:
+        description: 'Branch'
+        required: true
+        default: 'master'
+      shoot:
+        description: 'Shoot cluster name'
+        required: true
+        default: 'ci'
   schedule:
     - cron: '0 * * * *' # every hour
 
@@ -55,6 +54,6 @@ jobs:
       env:
         SHOOT_NAME: ${{ github.event.inputs.shoot }}
       run: |
-        ./unsinstall-kyma.sh
+        ./uninstall-kyma.sh
         kubectl --kubeconfig ./garden-kubeconfig.yaml delete shoot $SHOOT_NAME
 
