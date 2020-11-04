@@ -19,6 +19,8 @@ kubectl delete ApplicationMapping --all -A &
 kubectl delete Application --all -A &
 kubectl delete deployment --all &
 kubectl delete service --all &
+kubectl delete clusterassets.rafter.kyma-project.io --all &
+kubectl delete clusterbuckets.rafter.kyma-project.io --all &
 
 helm ls -A -ojson | jq -r '.[] | "helm delete \(.name) -n \(.namespace)"' | while read -r line; do bash -c "$line" ; done
 
@@ -27,7 +29,8 @@ kubectl delete -f resources/cluster-essentials/files -n kyma-system
 # Delete namespaces
 kubectl delete ns kyma-system &
 kubectl delete ns kyma-integration &
-kubectl delete ns kyma-instaler &
+kubectl delete ns kyma-installer &
+kubectl delete ns istio-system &
 kubectl delete ns knative-eventing &
 kubectl delete ns natss &
 kubectl delete ns mocks &
