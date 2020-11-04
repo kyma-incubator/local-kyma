@@ -15,7 +15,9 @@ on:
         description: 'Shoot cluster name'
         required: true
         default: 'ci'
-
+  schedule:
+    - cron: '0 * * * *' # every hour
+      
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -51,7 +53,7 @@ jobs:
     - name: Uninstall Kyma
       run: |
         ./uninstall-kyma.sh
-        export SHOOT_NAME=$(kubectl get cm shoot-info -n kube-system -ojsonpath='{.data.domain}')
+        export SHOOT_NAME=$(kubectl get cm shoot-info -n kube-system -ojsonpath='{.data.shootName}')
         kubectl --kubeconfig ./garden-kubeconfig.yaml annotate shoot $SHOOT_NAME confirmation.gardener.cloud/deletion=true
-        kubectl --kubeconfig ./garden-kubeconfig.yaml delete shoot $SHOOT_NAME
+        kubectl --kubeconfig ./garden-kubeconfig.yaml delete shoot $SHOOT_NAME --force=true --wait=false
 
