@@ -1,14 +1,21 @@
 name: Tests on Gardener
 
 on: 
-  push:
-    branches:
-      - main
-      - uninstall
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches:
-      - main
+  on:
+    workflow_dispatch:
+      inputs:
+        repository:
+          description: 'Repository'
+          required: true
+          default: 'kyma-project/kyma'
+        branch:
+          description: 'Branch'
+          required: true
+          default: 'master'
+        shoot:
+          description: 'Shoot cluster name'
+          required: true
+          default: 'ci'
   schedule:
     - cron: '0 * * * *' # every hour
 
@@ -18,12 +25,12 @@ jobs:
     timeout-minutes: 25
     steps:
     - uses: actions/checkout@v2
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
     - name: Create cluster, install helm
       env:
         GARDEN_KUBECONFIG: ${{ secrets.GARDEN_KUBECONFIG }}
-        SHOOT_NAME: c1
+        SHOOT_NAME: ${{ github.event.inputs.shoot }}
       run: |
         ./create-cluster-gardener.sh
         echo "Installing helm"
@@ -36,7 +43,7 @@ jobs:
       env: 
         SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
       run: |
-        ./download-kyma-charts.sh
+        ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
         ./install-kyma-gardener.sh
     - name: Install Commerce Mock
       run: |
@@ -46,7 +53,7 @@ jobs:
         ./app-connector-example.sh
     - name: Uninstall Kyma
       env:
-        SHOOT_NAME: c1
+        SHOOT_NAME: ${{ github.event.inputs.shoot }}
       run: |
         ./unsinstall-kyma.sh
         kubectl --kubeconfig ./garden-kubeconfig.yaml delete shoot $SHOOT_NAME
