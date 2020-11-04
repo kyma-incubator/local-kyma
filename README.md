@@ -1,4 +1,4 @@
-![Tests on k3s](https://github.com/kyma-incubator/local-kyma-k3d/workflows/Tests%20on%20k3s/badge.svg) ![Tests on minikube](https://github.com/kyma-incubator/local-kyma-k3d/workflows/Tests%20on%20minikube/badge.svg) ![Tests on kind](https://github.com/kyma-incubator/local-kyma-k3d/workflows/Tests%20on%20kind/badge.svg) ![Tests on Gardener](https://github.com/pbochynski/local-kyma/workflows/Tests%20on%20Gardener/badge.svg)
+![Tests on k3s](https://github.com/kyma-incubator/local-kyma-k3d/workflows/Tests%20on%20k3s/badge.svg) ![Tests on minikube](https://github.com/kyma-incubator/local-kyma-k3d/workflows/Tests%20on%20minikube/badge.svg) ![Tests on kind](https://github.com/kyma-incubator/local-kyma-k3d/workflows/Tests%20on%20kind/badge.svg) ![Tests on Gardener](https://github.com/kyma-incubator/local-kyma/workflows/Tests%20on%20Gardener/badge.svg)
 
 # Overview
 This repository contains scripts to start Kyma on local kubernetes cluster (k3s) in about 5 minutes! 
