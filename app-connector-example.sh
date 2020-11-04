@@ -1,4 +1,7 @@
-DOMAIN=${KYMA_DOMAIN:-local.kyma.dev}
+MOCK_HOST=""
+while [[ -z $MOCK_HOST ]]; do echo "waiting for mock host"; MOCK_HOST=$(kubectl get virtualservice -n mocks -ojsonpath='{.items[0].spec.hosts[0]}'); sleep 1; done
+
+DOMAIN=${MOCK_HOST/commerce./}
 
 cat <<EOF | kubectl apply -f -
 apiVersion: applicationconnector.kyma-project.io/v1alpha1
@@ -93,9 +96,9 @@ EOF
 TOKEN=""
 while [[ -z $TOKEN ]] ; do TOKEN=$(kubectl get tokenrequest.applicationconnector.kyma-project.io commerce -ojsonpath='{.status.token}'); echo "waiting for token"; sleep 2; done
 
-curl -k "https://commerce.$DOMAIN/connection" \
+curl -k "https://$MOCK_HOST/connection" \
   -H 'content-type: application/json' \
-  --data-binary '{"token":"https://connector-service.'$DOMAIN'/v1/applications/signingRequests/info?token='$TOKEN'","baseUrl":"https://'$DOMAIN'","insecure":true}' \
+  --data-binary '{"token":"https://connector-service.'$DOMAIN'/v1/applications/signingRequests/info?token='$TOKEN'","baseUrl":"https://'$MOCK_HOST'","insecure":true}' \
   --compressed
 
 
@@ -103,8 +106,8 @@ COMMERCE_WEBSERVICES_ID=""
 while [[ -z $COMMERCE_WEBSERVICES_ID ]]; 
 do 
   echo "registering commerce webservices"; 
-  curl -sk "https://commerce.$DOMAIN/local/apis/Commerce%20Webservices/register" -H 'content-type: application/json' -H 'origin: https://commerce.'$DOMAIN -d '{}'
-  COMMERCE_WEBSERVICES_ID=$(curl -sk "https://commerce.$DOMAIN/remote/apis" | jq -r '.[]|select(.name|test("Commerce Webservices"))|.id') 
+  curl -sk "https://$MOCK_HOST/local/apis/Commerce%20Webservices/register" -H 'content-type: application/json' -H 'origin: https://'$MOCK_HOST -d '{}'
+  COMMERCE_WEBSERVICES_ID=$(curl -sk "https://$MOCK_HOST/remote/apis" | jq -r '.[]|select(.name|test("Commerce Webservices"))|.id') 
   echo "COMMERCE_WEBSERVICES_ID=$COMMERCE_WEBSERVICES_ID" 
   sleep 2 
 done
@@ -113,8 +116,8 @@ COMMERCE_EVENTS_ID=""
 while [[ -z $COMMERCE_EVENTS_ID ]]; 
 do 
   echo "registering commerce events"; 
-  curl -sk "https://commerce.$DOMAIN/local/apis/Events/register" -H 'content-type: application/json' -H 'origin: https://commerce.'$DOMAIN -d '{}'
-  COMMERCE_EVENTS_ID=$(curl -sk "https://commerce.$DOMAIN/remote/apis" | jq -r '.[]|select(.name|test("Events"))|.id') 
+  curl -sk "https://$MOCK_HOST/local/apis/Events/register" -H 'content-type: application/json' -H 'origin: https://'$MOCK_HOST -d '{}'
+  COMMERCE_EVENTS_ID=$(curl -sk "https://$MOCK_HOST/remote/apis" | jq -r '.[]|select(.name|test("Events"))|.id') 
   echo "COMMERCE_EVENTS_ID=$COMMERCE_EVENTS_ID" 
   sleep 2 
 done
@@ -169,7 +172,7 @@ EOF
 PRICE=""
 while [[ -z $PRICE ]] 
 do
-  curl -sk "https://commerce.$DOMAIN/events" \
+  curl -sk "https://$MOCK_HOST/events" \
   -H 'content-type: application/json' \
   -d '{"event-type": "order.created", "event-type-version": "v1", "event-time": "2020-09-28T14:47:16.491Z", "data": {    "orderCode": "123" }, "event-tracing": true}' >/dev/null
   sleep 1;
