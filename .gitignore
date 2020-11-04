@@ -6,3 +6,4 @@ coredns-patch.yaml
 kyma.crt
 istioctl
 istio-*
+kubeconfig-*
