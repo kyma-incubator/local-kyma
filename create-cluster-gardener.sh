@@ -68,3 +68,4 @@ while [[ $STATUS != "True" ]]; do
 done
 
 kubectl --kubeconfig ./garden-kubeconfig.yaml get secret $SHOOT_NAME.kubeconfig -ojsonpath='{.data.kubeconfig}' | base64 --decode > ~/.kube/config
+chmod 600 ~/.kube/config

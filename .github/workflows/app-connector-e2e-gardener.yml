@@ -55,5 +55,6 @@ jobs:
         SHOOT_NAME: ${{ github.event.inputs.shoot }}
       run: |
         ./uninstall-kyma.sh
+        kubectl --kubeconfig ./garden-kubeconfig.yaml annotate shoot $SHOOT_NAME confirmation.gardener.cloud/deletion=true
         kubectl --kubeconfig ./garden-kubeconfig.yaml delete shoot $SHOOT_NAME
 
