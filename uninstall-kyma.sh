@@ -37,4 +37,6 @@ kubectl delete ns knative-eventing --force=true --wait=false
 kubectl delete ns natss --force=true --wait=false
 kubectl delete ns mocks --force=true --wait=false
 
+./remove-crd.sh
+
 echo "Kyma uninstalled in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
