@@ -7,7 +7,6 @@ function patch_obj() {
 }
 function patch_all_crd() {
   CRD=$1
-  echo "CRD to remove $CRD"
   kubectl get $CRD -ojson | jq -r ".items[].metadata.name" | while read -r name; do patch_obj $CRD $name; done
 
 }
