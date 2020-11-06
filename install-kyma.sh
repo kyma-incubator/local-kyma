@@ -130,17 +130,18 @@ waitForJobs 0 5
 echo "##############################################################################"
 echo "# Kyma installed in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
 echo "##############################################################################"
+echo
+# Download the certificate: 
+kubectl get secret kyma-gateway-certs -n istio-system -o jsonpath='{.data.tls\.crt}' | base64 --decode > kyma.crt
+# Import the certificate: 
+echo "Generated self signed TLS certificate should be trusted in your system. On Mac Os X execute this command:"
+echo ""
+echo "  sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain kyma.crt"
+echo ""
+echo "This is one time operation (you can skip this step if you did it before)."
+
 if [[ ! $SKIP_MODULES =~ "console" ]]; 
 then
-  echo
-  # Download the certificate: 
-  kubectl get secret kyma-gateway-certs -n istio-system -o jsonpath='{.data.tls\.crt}' | base64 --decode > kyma.crt
-  # Import the certificate: 
-  echo "Generated self signed TLS certificate should be trusted in your system. On Mac Os X execute this command:"
-  echo ""
-  echo "  sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain kyma.crt"
-  echo ""
-  echo "This is one time operation (you can skip this step if you did it before)."
   echo ""
   echo 'Kyma Console Url:'
   echo `kubectl get virtualservice console-web -n kyma-system -o jsonpath='{ .spec.hosts[0] }'`
