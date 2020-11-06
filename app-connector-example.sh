@@ -1,3 +1,5 @@
+kubectl apply -f commerce-mock.yaml 
+
 MOCK_HOST=""
 while [[ -z $MOCK_HOST ]]; do echo "waiting for mock host"; MOCK_HOST=$(kubectl get virtualservice -n mocks -ojsonpath='{.items[0].spec.hosts[0]}'); sleep 1; done
 
@@ -15,9 +17,7 @@ apiVersion: applicationconnector.kyma-project.io/v1alpha1
 kind: ApplicationMapping
 metadata:
   name: commerce
-EOF
-
-cat <<EOF | kubectl apply -f -
+---
 apiVersion: serverless.kyma-project.io/v1alpha1
 kind: Function
 metadata:
@@ -75,6 +75,9 @@ spec:
       kind: Service
       name: lastorder
 EOF
+
+MOCK_PROVIDER=""
+while [[ -z $MOCK_PROVIDER ]]; do echo "waiting for commerce mock to be ready"; MOCK_PROVIDER=$(curl -sk https://$MOCK_HOST/local/apis |jq -r '.[0].provider') ; sleep 5; done
 
 GATEWAY=""
 while [[ -z $GATEWAY ]]; do echo "waiting for commerce gateway"; GATEWAY=$(kubectl -n kyma-integration get deployment commerce-application-gateway -ojsonpath='{.metadata.name}'); sleep 2; done
