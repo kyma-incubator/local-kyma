@@ -36,8 +36,6 @@ jobs:
         SHOOT_NAME: ${{ github.event.inputs.shoot }}
       run: |
         ./create-cluster-gardener.sh
-        echo "Installing helm"
-        curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
         while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
     - name: Install Istio
       run: |
