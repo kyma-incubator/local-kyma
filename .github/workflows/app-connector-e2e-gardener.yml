@@ -18,7 +18,7 @@ on:
       skip:
         description: 'Skip modules'
         required: false
-        default: 'helm-broker,monitoring,kiali'
+        default: 'apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing,monitoring,kiali,dex'
   schedule:
     - cron: '0 * * * *' # every hour
       
