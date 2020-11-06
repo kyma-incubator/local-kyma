@@ -1,6 +1,16 @@
 name: Tests on minikube
 
 on: 
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: 'Repository'
+        required: true
+        default: 'kyma-project/kyma'
+      branch:
+        description: 'Branch'
+        required: true
+        default: 'master'
   push:
     branches:
       - main
@@ -35,7 +45,7 @@ jobs:
       env: 
         SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
       run: |
-        ./download-kyma-charts.sh
+        ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
         IP=$(minikube ssh "grep host.minikube.internal /etc/hosts | cut -f1") 
         export REGISTRY_IP=${IP//[$'\t\r\n ']}
         ./install-kyma.sh

@@ -91,7 +91,7 @@ sed "s/REGISTRY_IP/$REGISTRY_IP/" coredns-patch.tpl >coredns-patch.yaml
 kubectl -n kube-system patch cm coredns --patch "$(cat coredns-patch.yaml)"
 
 kubectl apply -f resources/cluster-essentials/files -n kyma-system 
-helm_install pod-preset resources/cluster-essentials/charts/pod-preset kyma-system 
+helm_install pod-preset resources/cluster-essentials/charts/pod-preset kyma-system & 
 helm_install ingress-dns-cert ingress-dns-cert istio-system --set global.ingress.domainName=$DOMAIN,global.environment.gardener=$GARDENER &
 
 helm_install dex resources/dex kyma-system --set $OVERRIDES --set resources.requests.cpu=10m &
@@ -128,7 +128,7 @@ kubectl apply -f installer-local.yaml &
 waitForJobs 0 5
 
 echo "##############################################################################"
-echo "# Kyma cluster created in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
+echo "# Kyma installed in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
 echo "##############################################################################"
 echo
 # Download the certificate: 
@@ -139,8 +139,12 @@ echo ""
 echo "  sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain kyma.crt"
 echo ""
 echo "This is one time operation (you can skip this step if you did it before)."
-echo ""
-echo 'Kyma Console Url:'
-echo `kubectl get virtualservice console-web -n kyma-system -o jsonpath='{ .spec.hosts[0] }'`
-echo 'User admin@kyma.cx, password:'
-echo `kubectl get secret admin-user -n kyma-system -o jsonpath="{.data.password}" | base64 --decode`
+
+if [[ ! $SKIP_MODULES =~ "console" ]]; 
+then
+  echo ""
+  echo 'Kyma Console Url:'
+  echo `kubectl get virtualservice console-web -n kyma-system -o jsonpath='{ .spec.hosts[0] }'`
+  echo 'User admin@kyma.cx, password:'
+  echo `kubectl get secret admin-user -n kyma-system -o jsonpath="{.data.password}" | base64 --decode`
+fi
