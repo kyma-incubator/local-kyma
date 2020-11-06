@@ -43,8 +43,12 @@ jobs:
       env: 
         SKIP: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
       run: |
+        echo "env SKIP=$SKIP"
+        echo "env SKIP_MODULES=$SKIP_MODULES"
         SKIP_MODULES=${{ github.event.inputs.skip }}
+        echo "env SKIP_MODULES=$SKIP_MODULES"
         SKIP_MODULES=${SKIP_MODULES:-$SKIP}
+        echo "env SKIP_MODULES=$SKIP_MODULES"
         ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
         ./install-kyma.sh
         sudo cp kyma.crt /usr/local/share/ca-certificates
