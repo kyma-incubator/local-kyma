@@ -47,9 +47,6 @@ jobs:
     - name: Install Commerce Mock
       run: |
         ./commerce-mock.sh
-    - name: Run End To End Test
-      run: |
-        ./app-connector-example.sh
     - name: Uninstall Kyma
       run: |
         ./uninstall-kyma.sh
