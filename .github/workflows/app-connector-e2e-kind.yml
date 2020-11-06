@@ -46,7 +46,7 @@ jobs:
     #   uses: mxschmitt/action-tmate@v3
     - name: Install Kyma
       env: 
-        SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
+        SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing,monitoring,kiali,dex
       run: |
         SKIP=${{ github.event.inputs.skip }}
         export SKIP_MODULES=${SKIP:-$SKIP_MODULES}
