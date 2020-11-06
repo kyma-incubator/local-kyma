@@ -1,7 +1,7 @@
 kubectl apply -f commerce-mock.yaml 
 
 MOCK_HOST=""
-while [[ -z $MOCK_HOST ]]; do echo "waiting for mock host"; MOCK_HOST=$(kubectl get virtualservice -n mocks -ojsonpath='{.items[0].spec.hosts[0]}'); sleep 1; done
+while [[ -z $MOCK_HOST ]]; do echo "waiting for mock host"; sleep 1; MOCK_HOST=$(kubectl get virtualservice -n mocks -ojsonpath='{.items[0].spec.hosts[0]}'); done
 
 DOMAIN=${MOCK_HOST/commerce./}
 
@@ -77,10 +77,10 @@ spec:
 EOF
 
 MOCK_PROVIDER=""
-while [[ -z $MOCK_PROVIDER ]]; do echo "waiting for commerce mock to be ready"; MOCK_PROVIDER=$(curl -sk https://$MOCK_HOST/local/apis |jq -r '.[0].provider') ; sleep 5; done
+while [[ -z $MOCK_PROVIDER ]]; do echo "waiting for commerce mock to be ready"; sleep 5; MOCK_PROVIDER=$(curl -sk https://$MOCK_HOST/local/apis |jq -r '.[0].provider') ; done
 
 GATEWAY=""
-while [[ -z $GATEWAY ]]; do echo "waiting for commerce gateway"; GATEWAY=$(kubectl -n kyma-integration get deployment commerce-application-gateway -ojsonpath='{.metadata.name}'); sleep 2; done
+while [[ -z $GATEWAY ]]; do echo "waiting for commerce gateway"; sleep 2; GATEWAY=$(kubectl -n kyma-integration get deployment commerce-application-gateway -ojsonpath='{.metadata.name}'); done
 
 kubectl -n kyma-integration \
   patch deployment commerce-application-gateway --type=json \
@@ -110,9 +110,9 @@ while [[ -z $COMMERCE_WEBSERVICES_ID ]];
 do 
   echo "registering commerce webservices"; 
   curl -sk "https://$MOCK_HOST/local/apis/Commerce%20Webservices/register" -H 'content-type: application/json' -H 'origin: https://'$MOCK_HOST -d '{}'
+  sleep 2 
   COMMERCE_WEBSERVICES_ID=$(curl -sk "https://$MOCK_HOST/remote/apis" | jq -r '.[]|select(.name|test("Commerce Webservices"))|.id') 
   echo "COMMERCE_WEBSERVICES_ID=$COMMERCE_WEBSERVICES_ID" 
-  sleep 2 
 done
 
 COMMERCE_EVENTS_ID=""
@@ -120,17 +120,17 @@ while [[ -z $COMMERCE_EVENTS_ID ]];
 do 
   echo "registering commerce events"; 
   curl -sk "https://$MOCK_HOST/local/apis/Events/register" -H 'content-type: application/json' -H 'origin: https://'$MOCK_HOST -d '{}'
+  sleep 2 
   COMMERCE_EVENTS_ID=$(curl -sk "https://$MOCK_HOST/remote/apis" | jq -r '.[]|select(.name|test("Events"))|.id') 
   echo "COMMERCE_EVENTS_ID=$COMMERCE_EVENTS_ID" 
-  sleep 2 
 done
 
 
 WS_EXT_NAME=""
-while [[ -z $WS_EXT_NAME ]]; do echo "waiting for commerce webservices"; WS_EXT_NAME=$(kubectl get serviceclass $COMMERCE_WEBSERVICES_ID -o jsonpath='{.spec.externalName}'); sleep 2; done
+while [[ -z $WS_EXT_NAME ]]; do echo "waiting for commerce webservices"; sleep 2; WS_EXT_NAME=$(kubectl get serviceclass $COMMERCE_WEBSERVICES_ID -o jsonpath='{.spec.externalName}'); done
 
 EVENTS_EXT_NAME=""
-while [[ -z $EVENTS_EXT_NAME ]]; do echo "waiting for commerce events"; EVENTS_EXT_NAME=$(kubectl get serviceclass $COMMERCE_EVENTS_ID -o jsonpath='{.spec.externalName}'); sleep 2; done
+while [[ -z $EVENTS_EXT_NAME ]]; do echo "waiting for commerce events"; sleep 2; EVENTS_EXT_NAME=$(kubectl get serviceclass $COMMERCE_EVENTS_ID -o jsonpath='{.spec.externalName}'); done
 
 cat <<EOF | kubectl apply -f -
 apiVersion: servicecatalog.k8s.io/v1beta1
