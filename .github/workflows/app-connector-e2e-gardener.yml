@@ -15,6 +15,10 @@ on:
         description: 'Shoot cluster name'
         required: true
         default: 'ci'
+      skip:
+        description: 'Skip modules'
+        required: false
+        default: 'helm-broker,monitoring,kiali'
   schedule:
     - cron: '0 * * * *' # every hour
       
@@ -42,6 +46,8 @@ jobs:
       env: 
         SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
       run: |
+        SKIP=${{ github.event.inputs.skip }}
+        export SKIP_MODULES=${SKIP:-$SKIP_MODULES}
         ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
         ./install-kyma-gardener.sh
     - name: Run End To End Test

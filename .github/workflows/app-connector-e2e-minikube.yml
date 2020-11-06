@@ -1,6 +1,6 @@
 name: Tests on minikube
 
-on: 
+on:
   workflow_dispatch:
     inputs:
       repository:
@@ -11,6 +11,10 @@ on:
         description: 'Branch'
         required: true
         default: 'master'
+      skip:
+        description: 'Skip modules'
+        required: false
+        default: 'helm-broker,monitoring,kiali'
   push:
     branches:
       - main
@@ -45,6 +49,8 @@ jobs:
       env: 
         SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
       run: |
+        SKIP=${{ github.event.inputs.skip }}
+        export SKIP_MODULES=${SKIP:-$SKIP_MODULES}
         ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
         IP=$(minikube ssh "grep host.minikube.internal /etc/hosts | cut -f1") 
         export REGISTRY_IP=${IP//[$'\t\r\n ']}
