@@ -11,9 +11,14 @@ on:
         description: 'Branch'
         required: true
         default: 'master'
+      skip:
+        description: 'Skip modules'
+        required: false
+        default: 'helm-broker,monitoring,kiali'
   push:
     branches:
       - main
+      - skip
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
@@ -38,8 +43,10 @@ jobs:
         ./install-istio.sh -f config-istio.yaml
     - name: Install Kyma
       env: 
-        SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
+        SKIP: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
       run: |
+        SKIP_MODULES=${{ github.event.inputs.skip }}
+        SKIP_MODULES=${SKIP_MODULES:-$SKIP}
         ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
         ./install-kyma.sh
         sudo cp kyma.crt /usr/local/share/ca-certificates
