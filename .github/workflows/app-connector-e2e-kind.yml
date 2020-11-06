@@ -15,7 +15,7 @@ on:
         description: 'Skip modules'
         required: false
         default: 'helm-broker,monitoring,kiali'
-    push:
+  push:
     branches:
       - main
   pull_request:

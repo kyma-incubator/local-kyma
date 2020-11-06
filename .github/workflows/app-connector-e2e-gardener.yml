@@ -19,7 +19,7 @@ on:
         description: 'Skip modules'
         required: false
         default: 'helm-broker,monitoring,kiali'
-    schedule:
+  schedule:
     - cron: '0 * * * *' # every hour
       
 jobs:
