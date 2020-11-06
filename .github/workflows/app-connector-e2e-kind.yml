@@ -14,7 +14,7 @@ on:
       skip:
         description: 'Skip modules'
         required: false
-        default: 'helm-broker,monitoring,kiali'
+        default: 'apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing,monitoring,kiali,dex'
   push:
     branches:
       - main
@@ -37,8 +37,6 @@ jobs:
         GO111MODULE="on" go get sigs.k8s.io/kind@v0.9.0
         echo "Starting docker registry & kind cluster"
         ./create-cluster-kind.sh
-        echo "Installing helm"
-        curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
     - name: Install Istio
       run: |
         ./install-istio.sh -f config-istio-nodeport.yaml
@@ -46,7 +44,7 @@ jobs:
     #   uses: mxschmitt/action-tmate@v3
     - name: Install Kyma
       env: 
-        SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing
+        SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing,monitoring,kiali,dex
       run: |
         SKIP=${{ github.event.inputs.skip }}
         export SKIP_MODULES=${SKIP:-$SKIP_MODULES}

@@ -102,7 +102,7 @@ helm_install rafter resources/rafter kyma-system --set $OVERRIDES &
 
 helm_install service-catalog resources/service-catalog kyma-system --set $OVERRIDES --set catalog.webhook.resources.requests.cpu=10m,catalog.controllerManager.resources.requests.cpu=10m &
 helm_install service-catalog-addons resources/service-catalog-addons kyma-system --set $OVERRIDES &
-# helm_install helm-broker resources/helm-broker kyma-system --set $OVERRIDES &
+helm_install helm-broker resources/helm-broker kyma-system --set $OVERRIDES &
 
 helm_install core resources/core kyma-system --set $OVERRIDES &
 helm_install console resources/console kyma-system --set $OVERRIDES &
@@ -118,8 +118,8 @@ helm_install knative-provisioner-natss resources/knative-provisioner-natss knati
 helm_install nats-streaming resources/nats-streaming natss &
 helm_install event-sources resources/event-sources kyma-system &
 
-# helm_install kiali resources/kiali kyma-system --set global.ingress.domainName=$DOMAIN &
-# helm_install monitoring resources/monitoring kyma-system --set global.ingress.domainName=$DOMAIN &
+helm_install kiali resources/kiali kyma-system --set global.ingress.domainName=$DOMAIN &
+helm_install monitoring resources/monitoring kyma-system --set global.ingress.domainName=$DOMAIN &
 
 # Create installer deployment scaled to 0 to get console running:
 kubectl apply -f installer-local.yaml &
