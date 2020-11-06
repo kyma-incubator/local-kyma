@@ -44,9 +44,9 @@ jobs:
       run: |
         ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
         ./install-kyma-gardener.sh
-    - name: Install Commerce Mock
+    - name: Run End To End Test
       run: |
-        ./commerce-mock.sh
+        ./app-connector-example.sh
     - name: Uninstall Kyma
       run: |
         ./uninstall-kyma.sh
