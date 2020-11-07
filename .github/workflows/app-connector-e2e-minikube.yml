@@ -14,7 +14,7 @@ on:
       skip:
         description: 'Skip modules'
         required: false
-        default: 'apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing,monitoring,kiali,dex'
+        default: 'monitoring,tracing,kiali,logging,helm-broker,console,cluster-users,dex'
   push:
     branches:
       - main
@@ -45,7 +45,7 @@ jobs:
         ./minikube-tunnel.sh
     - name: Install Kyma
       env: 
-        SKIP_MODULES: apiserver-proxy,helm-broker,console,cluster-users,apiserver-proxy,logging,tracing,monitoring,kiali,dex
+        SKIP_MODULES: monitoring,tracing,kiali,logging,helm-broker,console,cluster-users,dex
       run: |
         SKIP=${{ github.event.inputs.skip }}
         export SKIP_MODULES=${SKIP:-$SKIP_MODULES}
