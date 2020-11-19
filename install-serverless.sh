@@ -32,6 +32,8 @@ kubectl apply -f https://www.getambassador.io/yaml/ambassador/ambassador-rbac.ya
 kubectl apply -f https://www.getambassador.io/yaml/ambassador/ambassador-service.yaml
 kubectl scale deployment --replicas 1 ambassador
 
+
+# Todo: change ambassador to something more lightweight
 cat <<EOF | kubectl apply -f - 
 apiVersion: serverless.kyma-project.io/v1alpha1
 kind: Function
@@ -55,7 +57,8 @@ spec:
   service: demo
 EOF
 
-echo "After the function demo and ambassador are ready just call:"
+echo ""
+echo "After the function demo and ambassador pods are ready just call:"
 echo ""
 echo "curl localhost/demo/"
 echo ""
