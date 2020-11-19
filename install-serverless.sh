@@ -33,7 +33,8 @@ kubectl apply -f https://www.getambassador.io/yaml/ambassador/ambassador-service
 kubectl scale deployment --replicas 1 ambassador
 
 
-# Todo: change ambassador to something more lightweight
+# Todo: change ambassador to more lightweight ingress
+# it's docker image weights 383MB, it's bonkers :v 
 cat <<EOF | kubectl apply -f - 
 apiVersion: serverless.kyma-project.io/v1alpha1
 kind: Function
