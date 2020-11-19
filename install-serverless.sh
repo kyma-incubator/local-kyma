@@ -27,14 +27,10 @@ set -e
 
 helm upgrade --atomic --create-namespace -i serverless resources/serverless -n kyma-system --set $REGISTRY_VALUES,global.ingress.domainName=$DOMAIN --wait
 
-kubectl apply -f https://www.getambassador.io/yaml/ambassador/ambassador-crds.yaml
-kubectl apply -f https://www.getambassador.io/yaml/ambassador/ambassador-rbac.yaml
-kubectl apply -f https://www.getambassador.io/yaml/ambassador/ambassador-service.yaml
-kubectl scale deployment --replicas 1 ambassador
+helm repo add traefik https://helm.traefik.io/traefik
+helm repo update
+helm install traefik traefik/traefik --wait
 
-
-# Todo: change ambassador to more lightweight ingress
-# it's docker image weights 383MB, it's bonkers :v 
 cat <<EOF | kubectl apply -f - 
 apiVersion: serverless.kyma-project.io/v1alpha1
 kind: Function
@@ -49,17 +45,24 @@ spec:
       }
 
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+kind: Ingress
+apiVersion: extensions/v1beta1
 metadata:
-  name: demo
+  name: "demo"
+  namespace: default
 spec:
-  prefix: /demo/
-  service: demo
+  rules:
+    - http:
+        paths:
+          - path: /demo
+            backend:
+              serviceName: demo
+              servicePort: 80
+
 EOF
 
 echo ""
-echo "After the function demo and ambassador pods are ready just call:"
+echo "After the function demo and traefik pods are ready just call:"
 echo ""
 echo "curl localhost/demo/"
 echo ""
