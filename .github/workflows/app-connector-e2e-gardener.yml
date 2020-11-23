@@ -19,6 +19,10 @@ on:
         description: 'Skip modules'
         required: false
         default: 'monitoring,tracing,kiali,logging,helm-broker,console,cluster-users,dex'
+      keep:
+        description: 'Keep cluster alive'
+        required: true
+        default: true
   schedule:
     - cron: '0 * * * *' # every hour
       
@@ -53,6 +57,11 @@ jobs:
         ./app-connector-example.sh
     - name: Uninstall Kyma
       run: |
+        if [[ ${{ github.event.inputs.keep }}=="true" ]]; then
+          echo "Keeping cluster alive"
+          exit 0;
+        fi
+        echo "Deleting cluster ..."
         ./uninstall-kyma.sh
         export SHOOT_NAME=$(kubectl get cm shoot-info -n kube-system -ojsonpath='{.data.shootName}')
         kubectl --kubeconfig ./garden-kubeconfig.yaml annotate shoot $SHOOT_NAME confirmation.gardener.cloud/deletion=true
