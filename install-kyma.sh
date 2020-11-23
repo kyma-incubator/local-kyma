@@ -115,7 +115,7 @@ helm_install knative-eventing resources/knative-eventing knative-eventing &
 
 helm_install application-connector resources/application-connector kyma-integration --set $OVERRIDES &
 helm_install knative-provisioner-natss resources/knative-provisioner-natss knative-eventing &
-helm_install nats-streaming resources/nats-streaming natss &
+helm_install nats-streaming resources/nats-streaming natss --set global.natsStreaming.resources.requests.memory=64M &
 helm_install event-sources resources/event-sources kyma-system &
 
 helm_install kiali resources/kiali kyma-system --set global.ingress.domainName=$DOMAIN &
