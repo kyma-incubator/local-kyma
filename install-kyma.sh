@@ -5,7 +5,6 @@ SECONDS=0
 GARDENER=${GARDENER:-false}
 export DOMAIN=${KYMA_DOMAIN:-local.kyma.dev}
 export OVERRIDES=global.isLocalEnv=false,global.ingress.domainName=$DOMAIN,global.environment.gardener=$GARDENER,global.domainName=$DOMAIN,global.tlsCrt=ZHVtbXkK
-export ORY=global.ory.hydra.persistence.enabled=false,global.ory.hydra.persistence.postgresql.enabled=false,hydra.hydra.autoMigrate=false,hydra.deployment.resources.requests.cpu=10m,oathkeeper.deployment.resources.requests.cpu=10m
 # export REGISTRY_VALUES="dockerRegistry.username=$REGISTRY_USER,dockerRegistry.password=$REGISTRY_PASS,dockerRegistry.enableInternal=false,dockerRegistry.serverAddress=ghcr.io,dockerRegistry.registryAddress=ghcr.io/$REGISTRY_USER"       
 if [[ -z $REGISTRY_VALUES ]]; then
   export REGISTRY_VALUES="dockerRegistry.enableInternal=false,dockerRegistry.serverAddress=registry.localhost:5000,dockerRegistry.registryAddress=registry.localhost:5000"
@@ -98,18 +97,18 @@ helm_install dex resources/dex kyma-system --set $OVERRIDES --set resources.requ
 helm_install ory resources/ory kyma-system --set $OVERRIDES -f resources/ory/profile-evaluation.yaml &
 helm_install api-gateway resources/api-gateway kyma-system --set $OVERRIDES --set deployment.resources.requests.cpu=10m & 
 
-helm_install rafter resources/rafter kyma-system --set $OVERRIDES &
+helm_install rafter resources/rafter kyma-system --set $OVERRIDES -f resources/rafter/profile-evaluation.yaml &
 
-helm_install service-catalog resources/service-catalog kyma-system --set $OVERRIDES --set catalog.webhook.resources.requests.cpu=10m,catalog.controllerManager.resources.requests.cpu=10m &
-helm_install service-catalog-addons resources/service-catalog-addons kyma-system --set $OVERRIDES &
-helm_install helm-broker resources/helm-broker kyma-system --set $OVERRIDES &
+helm_install service-catalog resources/service-catalog kyma-system --set $OVERRIDES -f resources/service-catalog/profile-evaluation.yaml &
+helm_install service-catalog-addons resources/service-catalog-addons kyma-system --set $OVERRIDES -f resources/service-catalog-addons/profile-evaluation.yaml &
+helm_install helm-broker resources/helm-broker kyma-system --set $OVERRIDES -f resources/helm-broker/profile-evaluation.yaml &
 
 helm_install core resources/core kyma-system --set $OVERRIDES &
 helm_install console resources/console kyma-system --set $OVERRIDES &
 helm_install cluster-users resources/cluster-users kyma-system --set $OVERRIDES &
-helm_install serverless resources/serverless kyma-system --set $REGISTRY_VALUES,global.ingress.domainName=$DOMAIN &
+helm_install serverless resources/serverless kyma-system -f resources/serverless/profile-evaluation.yaml --set $REGISTRY_VALUES,global.ingress.domainName=$DOMAIN &
 helm_install logging resources/logging kyma-system --set $OVERRIDES -f resources/logging/profile-evaluation.yaml &
-helm_install tracing resources/tracing kyma-system --set $OVERRIDES &
+helm_install tracing resources/tracing kyma-system --set $OVERRIDES -f resources/tracing/profile-evaluation.yaml &
 
 helm_install knative-eventing resources/knative-eventing knative-eventing &
 
