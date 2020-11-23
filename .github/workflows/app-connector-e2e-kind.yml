@@ -30,7 +30,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
     - uses: actions/checkout@v2
     - name: Prepare docker registry, kind & helm 3
