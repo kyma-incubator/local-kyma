@@ -57,9 +57,10 @@ jobs:
         ./app-connector-example.sh
     - name: Uninstall Kyma
       run: |
-        if [[ ${{ github.event.inputs.keep }}=="true" ]]; then
+        KEEP=${{ github.event.inputs.keep }}
+        if [[ $KEEP == "true" ]]; then
           echo "Keeping cluster alive"
-          exit 0;
+          exit 0
         fi
         echo "Deleting cluster ..."
         ./uninstall-kyma.sh
