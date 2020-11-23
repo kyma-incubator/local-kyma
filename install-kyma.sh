@@ -95,7 +95,7 @@ helm_install pod-preset resources/cluster-essentials/charts/pod-preset kyma-syst
 helm_install ingress-dns-cert ingress-dns-cert istio-system --set global.ingress.domainName=$DOMAIN,global.environment.gardener=$GARDENER &
 
 helm_install dex resources/dex kyma-system --set $OVERRIDES --set resources.requests.cpu=10m &
-helm_install ory resources/ory kyma-system --set $OVERRIDES --set $ORY &
+helm_install ory resources/ory kyma-system --set $OVERRIDES -f resources/ory/profile-evaluation.yaml &
 helm_install api-gateway resources/api-gateway kyma-system --set $OVERRIDES --set deployment.resources.requests.cpu=10m & 
 
 helm_install rafter resources/rafter kyma-system --set $OVERRIDES &
@@ -108,18 +108,18 @@ helm_install core resources/core kyma-system --set $OVERRIDES &
 helm_install console resources/console kyma-system --set $OVERRIDES &
 helm_install cluster-users resources/cluster-users kyma-system --set $OVERRIDES &
 helm_install serverless resources/serverless kyma-system --set $REGISTRY_VALUES,global.ingress.domainName=$DOMAIN &
-helm_install logging resources/logging kyma-system --set $OVERRIDES &
+helm_install logging resources/logging kyma-system --set $OVERRIDES -f resources/logging/profile-evaluation.yaml &
 helm_install tracing resources/tracing kyma-system --set $OVERRIDES &
 
 helm_install knative-eventing resources/knative-eventing knative-eventing &
 
-helm_install application-connector resources/application-connector kyma-integration --set $OVERRIDES &
+helm_install application-connector resources/application-connector kyma-integration --set $OVERRIDES -f resources/application-connector/profile-evaluation.yaml &
 helm_install knative-provisioner-natss resources/knative-provisioner-natss knative-eventing &
-helm_install nats-streaming resources/nats-streaming natss --set global.natsStreaming.resources.requests.memory=64M &
+helm_install nats-streaming resources/nats-streaming natss --set global.natsStreaming.resources.requests.memory=64M,global.natsStreaming.resources.requests.cpu=10m &
 helm_install event-sources resources/event-sources kyma-system &
 
-helm_install kiali resources/kiali kyma-system --set global.ingress.domainName=$DOMAIN &
-helm_install monitoring resources/monitoring kyma-system --set global.ingress.domainName=$DOMAIN &
+helm_install kiali resources/kiali kyma-system --set global.ingress.domainName=$DOMAIN -f resources/kiali/profile-evaluation.yaml &
+helm_install monitoring resources/monitoring kyma-system --set global.ingress.domainName=$DOMAIN -f resources/monitoring/profile-evaluation.yaml &
 
 # Create installer deployment scaled to 0 to get console running:
 kubectl apply -f installer-local.yaml &
