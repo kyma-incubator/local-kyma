@@ -35,6 +35,7 @@ jobs:
     # - name: Setup tmate session
     #   uses: mxschmitt/action-tmate@v3
     - name: Create cluster, install helm
+      timeout-minutes: 10
       env:
         GARDEN_KUBECONFIG: ${{ secrets.GARDEN_KUBECONFIG }}
         SHOOT_NAME: ${{ github.event.inputs.shoot }}
@@ -42,9 +43,11 @@ jobs:
         ./create-cluster-gardener.sh
         while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
     - name: Install Istio
+      timeout-minutes: 2
       run: |
         ./install-istio.sh -f config-istio.yaml
     - name: Install Kyma
+      timeout-minutes: 5
       env: 
         SKIP_MODULES: monitoring,tracing,kiali,logging,helm-broker,console,cluster-users,dex
       run: |
@@ -53,9 +56,11 @@ jobs:
         ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
         ./install-kyma-gardener.sh
     - name: Run End To End Test
+      timeout-minutes: 5
       run: |
         ./app-connector-example.sh
     - name: Uninstall Kyma
+      if: ${{ always() }}
       run: |
         KEEP=${{ github.event.inputs.keep }}
         if [[ $KEEP == "true" ]]; then
