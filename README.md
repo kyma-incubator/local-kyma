@@ -9,6 +9,7 @@ This repository contains scripts to start Kyma on local kubernetes cluster (k3s)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [helm 3](https://helm.sh/docs/intro/quickstart/#install-helm)
 - [k3d](https://github.com/rancher/k3d) - you can install it with the command: `brew install k3d` or `curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash`
+- [jq](https://stedolan.github.io/jq/)
 
 # Quick start
 
@@ -52,9 +53,8 @@ Empty Kyma cluster in 5 minutes is good enough. What about investing another 3 m
 - simple serverless function named `lastorder` in the default namespace triggered by `order.created` event
 - Commerce Webservices API bound to the function
 
-Deploy the example with these commands:
+Deploy the example with this command:
 ```
-./commerce-mock.sh
 ./app-connector-example.sh
 ```
 
