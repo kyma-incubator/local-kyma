@@ -29,7 +29,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
     - uses: actions/checkout@v2
     # - name: Setup tmate session
@@ -47,7 +47,7 @@ jobs:
       run: |
         ./install-istio.sh -f config-istio.yaml
     - name: Install Kyma
-      timeout-minutes: 5
+      timeout-minutes: 8
       env: 
         SKIP_MODULES: monitoring,tracing,kiali,logging,helm-broker,console,cluster-users,dex
       run: |
