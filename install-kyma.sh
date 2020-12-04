@@ -20,6 +20,8 @@ function helm_install() {
   local chart=$2
   local namespace=$3
   local retries=3
+  local result=""
+  local status=""
   if [[ $SKIP_MODULES =~ $release ]]; 
   then
     echo "$release skipped"
@@ -28,16 +30,24 @@ function helm_install() {
   while [ $retries -ge 0 ]
   do
     ((retries--))
-    echo "Checking status of release $1 in the namespace $namespace"
-    local status=$(helm ls -n $namespace -ojson | jq -r ".[]|select(.name==\"$release\")|.status")
+    status=$(helm status $release -n $namespace -ojson | jq -r ".info.status") >/dev/null
     if [[ "$status" == "deployed" ]];
     then
-      echo "$release deployed" 
       break
+    fi
+    if [[ "$status" == "pending-install" ]];
+    then
+      echo "Deleting $release in status pending-install"
+      helm uninstall $release -n $namespace
+    fi
+    if [[ "$status" == "failed" ]];
+    then
+      echo "Deleting $release in status failed"
+      helm uninstall $release -n $namespace
     fi
     echo "Installing $1 in the namespace $namespace"    
     set +e
-    helm upgrade --atomic -i $release $chart -n $namespace "${@:4}" 
+    helm upgrade --wait --force -i $release $chart -n $namespace "${@:4}"
     set -e
   done
 }
