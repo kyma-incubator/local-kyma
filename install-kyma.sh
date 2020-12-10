@@ -122,7 +122,7 @@ helm_install tracing resources/tracing kyma-system --set $OVERRIDES -f resources
 
 helm_install knative-eventing resources/knative-eventing knative-eventing &
 
-helm_install application-connector resources/application-connector kyma-integration --set $OVERRIDES -f resources/application-connector/profile-evaluation.yaml &
+helm_install application-connector resources/application-connector kyma-integration --set $OVERRIDES &
 helm_install knative-provisioner-natss resources/knative-provisioner-natss knative-eventing &
 helm_install nats-streaming resources/nats-streaming natss --set global.natsStreaming.resources.requests.memory=64M,global.natsStreaming.resources.requests.cpu=10m &
 helm_install event-sources resources/event-sources kyma-system &
