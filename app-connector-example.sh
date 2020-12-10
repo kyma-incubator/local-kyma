@@ -111,7 +111,7 @@ do
   echo "registering commerce webservices"; 
   curl -sk "https://$MOCK_HOST/local/apis/Commerce%20Webservices/register" -H 'content-type: application/json' -H 'origin: https://'$MOCK_HOST -d '{}'
   sleep 2 
-  COMMERCE_WEBSERVICES_ID=$(curl -sk "https://$MOCK_HOST/remote/apis" | jq -r '.[]|select(.name|test("Commerce Webservices"))|.id') 
+  COMMERCE_WEBSERVICES_ID=$(curl -sk "https://$MOCK_HOST/remote/apis" | jq -r '[.[]|select(.name|test("Commerce Webservices"))][0].id') 
   echo "COMMERCE_WEBSERVICES_ID=$COMMERCE_WEBSERVICES_ID" 
 done
 
@@ -121,7 +121,7 @@ do
   echo "registering commerce events"; 
   curl -sk "https://$MOCK_HOST/local/apis/Events/register" -H 'content-type: application/json' -H 'origin: https://'$MOCK_HOST -d '{}'
   sleep 2 
-  COMMERCE_EVENTS_ID=$(curl -sk "https://$MOCK_HOST/remote/apis" | jq -r '.[]|select(.name|test("Events"))|.id') 
+  COMMERCE_EVENTS_ID=$(curl -sk "https://$MOCK_HOST/remote/apis" | jq -r '[.[]|select(.name|test("Events"))][0].id') 
   echo "COMMERCE_EVENTS_ID=$COMMERCE_EVENTS_ID" 
 done
 
@@ -177,9 +177,9 @@ while [[ -z $PRICE ]]
 do
   curl -sk "https://$MOCK_HOST/events" \
   -H 'content-type: application/json' \
-  -d '{"event-type": "order.created", "event-type-version": "v1", "event-time": "2020-09-28T14:47:16.491Z", "data": {    "orderCode": "123" }, "event-tracing": true}' >/dev/null
+  -d '{"event-type": "order.created", "event-type-version": "v1", "event-time": "2020-09-28T14:47:16.491Z", "data": {    "orderCode": "444" }, "event-tracing": true}' >/dev/null
   sleep 1;
   RESPONSE=$(curl -sk https://lastorder.$DOMAIN)
-  PRICE=$(echo "$RESPONSE" | jq -r 'select(.orderId=="123")| .totalPriceWithTax.value')
+  PRICE=$(echo "$RESPONSE" | jq -r 'select(.orderId=="444")| .totalPriceWithTax.value')
   echo "waiting for last order price, response: $RESPONSE"
 done
