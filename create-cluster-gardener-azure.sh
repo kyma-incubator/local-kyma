@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo $GARDEN_KUBECONFIG | base64 --decode  > ./garden-kubeconfig.yaml
-export SHOOT_NAME=${SHOOT_NAME:-c$(date +"%d%H%M%S")}
+export SHOOT_NAME=${SHOOT_NAME:-az$(date +"%d%H%M%S")}
 
 cat <<EOF | kubectl --kubeconfig ./garden-kubeconfig.yaml apply -f - 
 kind: Shoot
@@ -36,6 +36,8 @@ spec:
         volume:
           type: Standard_LRS
           size: 50Gi
+        zones:
+          - '3'
         systemComponents:
           allow: true
   networking:
