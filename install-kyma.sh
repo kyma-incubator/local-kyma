@@ -114,7 +114,7 @@ helm_install service-catalog-addons resources/service-catalog-addons kyma-system
 helm_install helm-broker resources/helm-broker kyma-system --set $OVERRIDES -f resources/helm-broker/profile-evaluation.yaml &
 
 helm_install core resources/core kyma-system --set $OVERRIDES &
-helm_install console resources/console kyma-system --set $OVERRIDES -f resources/console/profile-evaluation.yaml &
+helm_install console resources/console kyma-system --set $OVERRIDES -f resources/console/profile-evaluation.yaml --set pamela.enabled=false &
 helm_install cluster-users resources/cluster-users kyma-system --set $OVERRIDES &
 helm_install serverless resources/serverless kyma-system -f resources/serverless/profile-evaluation.yaml --set $REGISTRY_VALUES,global.ingress.domainName=$DOMAIN &
 helm_install logging resources/logging kyma-system --set $OVERRIDES -f resources/logging/profile-evaluation.yaml &
@@ -122,7 +122,7 @@ helm_install tracing resources/tracing kyma-system --set $OVERRIDES -f resources
 
 helm_install knative-eventing resources/knative-eventing knative-eventing &
 
-helm_install application-connector resources/application-connector kyma-integration --set $OVERRIDES &
+helm_install application-connector resources/application-connector kyma-integration --set $OVERRIDES -f resources/application-connector/profile-evaluation.yaml &
 helm_install knative-provisioner-natss resources/knative-provisioner-natss knative-eventing &
 helm_install nats-streaming resources/nats-streaming natss --set global.natsStreaming.resources.requests.memory=64M,global.natsStreaming.resources.requests.cpu=10m &
 helm_install event-sources resources/event-sources kyma-system &
