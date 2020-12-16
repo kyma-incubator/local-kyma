@@ -56,7 +56,9 @@ jobs:
     - name: Run End To End Test
       timeout-minutes: 10
       run: |
-        ./app-connector-example.sh
+        cd fast-integration
+        npm install
+        npm test
     - name: Uninstall Kyma
       if: ${{ always() }}
       run: |
