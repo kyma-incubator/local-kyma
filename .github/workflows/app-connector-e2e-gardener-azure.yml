@@ -18,7 +18,7 @@ on:
       skip:
         description: 'Skip modules'
         required: false
-        default: 'monitoring,tracing,kiali,logging,helm-broker,console,cluster-users,dex'
+        default: 'monitoring,tracing,kiali,logging,console,cluster-users,dex'
       keep:
         description: 'Keep cluster alive'
         required: true
