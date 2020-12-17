@@ -18,7 +18,7 @@ on:
       skip:
         description: 'Skip modules'
         required: false
-        default: 'monitoring,tracing,kiali,logging,helm-broker,console,cluster-users,dex'
+        default: 'monitoring,tracing,kiali,logging,console,cluster-users,dex'
       keep:
         description: 'Keep cluster alive'
         required: true
@@ -49,7 +49,7 @@ jobs:
     - name: Install Kyma
       timeout-minutes: 8
       env: 
-        SKIP_MODULES: monitoring,tracing,kiali,logging,helm-broker,console,cluster-users,dex
+        SKIP_MODULES: monitoring,tracing,kiali,logging,console,cluster-users,dex
       run: |
         SKIP=${{ github.event.inputs.skip }}
         export SKIP_MODULES=${SKIP:-$SKIP_MODULES}
