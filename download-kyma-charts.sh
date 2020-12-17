@@ -4,4 +4,5 @@ curl -s https://codeload.github.com/${REPO}/zip/${BRANCH} --output kyma-src.zip
 unzip --qq -d ./tmp kyma-src.zip
 rm -rf ./resources
 mv ./tmp/*/resources ./
+mv ./tmp/*/tests/fast-integration ./
 rm -rf ./tmp

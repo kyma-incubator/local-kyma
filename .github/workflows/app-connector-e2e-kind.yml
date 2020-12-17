@@ -54,4 +54,6 @@ jobs:
     #   uses: mxschmitt/action-tmate@v3
     - name: Run End To End Test
       run: |
-        ./app-connector-example.sh
+        cd fast-integration
+        npm install
+        npm test
