@@ -42,7 +42,7 @@ jobs:
         ./install-istio.sh -f config-istio-nodeport.yaml
     - name: Install Kyma
       env: 
-        SKIP_MODULES: monitoring,tracing,kiali,logging,console,cluster-users,dex
+        SKIP_MODULES: monitoring,tracing,kiali,logging,console,cluster-users,dex,helm-broker
       run: |
         SKIP=${{ github.event.inputs.skip }}
         export SKIP_MODULES=${SKIP:-$SKIP_MODULES}
