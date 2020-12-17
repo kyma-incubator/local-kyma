@@ -58,7 +58,7 @@ jobs:
       run: |
         cd fast-integration
         npm install
-        npm test
+        npm test-commerce-mock
     - name: Uninstall Kyma
       if: ${{ always() }}
       run: |
