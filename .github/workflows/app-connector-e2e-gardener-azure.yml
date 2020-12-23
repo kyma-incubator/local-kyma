@@ -47,7 +47,7 @@ jobs:
       run: |
         ./install-istio.sh -f config-istio.yaml
     - name: Install Kyma
-      timeout-minutes: 15
+      timeout-minutes: 20
       run: |
         SKIP=${{ github.event.inputs.skip }}
         export SKIP_MODULES=${SKIP:-$SKIP_MODULES}

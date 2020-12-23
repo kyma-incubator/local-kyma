@@ -18,6 +18,7 @@ docker run -d \
 
 # Create Kyma cluster
 k3d cluster create kyma \
+    --image "docker.io/rancher/k3s:v1.18.13-k3s1" \
     --port 80:80@loadbalancer \
     --port 443:443@loadbalancer \
     --k3s-server-arg --no-deploy \

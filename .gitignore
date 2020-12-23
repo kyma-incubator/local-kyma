@@ -8,3 +8,4 @@ istioctl
 istio-*
 kubeconfig-*
 kyma-src.zip
+fast-integration
