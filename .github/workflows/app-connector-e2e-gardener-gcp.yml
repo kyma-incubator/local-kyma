@@ -1,4 +1,4 @@
-name: Tests on Gardener
+name: Gardener - GCP
 
 on: 
   workflow_dispatch:
@@ -43,11 +43,11 @@ jobs:
         ./create-cluster-gardener.sh
         while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
     - name: Install Istio
-      timeout-minutes: 2
+      timeout-minutes: 5
       run: |
         ./install-istio.sh -f config-istio.yaml
     - name: Install Kyma
-      timeout-minutes: 8
+      timeout-minutes: 10
       env: 
         SKIP_MODULES: monitoring,tracing,kiali,logging,console,cluster-users,dex
       run: |
@@ -56,7 +56,7 @@ jobs:
         ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
         ./install-kyma-gardener.sh
     - name: Run End To End Test
-      timeout-minutes: 5
+      timeout-minutes: 8
       run: |
         cd fast-integration
         npm install

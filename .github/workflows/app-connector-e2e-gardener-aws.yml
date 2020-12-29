@@ -1,4 +1,4 @@
-name: Tests on AWS
+name: Gardener - AWS
 
 on: 
   workflow_dispatch:
