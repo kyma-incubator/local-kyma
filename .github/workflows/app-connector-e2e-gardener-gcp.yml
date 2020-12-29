@@ -47,16 +47,14 @@ jobs:
       run: |
         ./install-istio.sh -f config-istio.yaml
     - name: Install Kyma
-      timeout-minutes: 10
-      env: 
-        SKIP_MODULES: monitoring,tracing,kiali,logging,console,cluster-users,dex
+      timeout-minutes: 15
       run: |
         SKIP=${{ github.event.inputs.skip }}
         export SKIP_MODULES=${SKIP:-$SKIP_MODULES}
         ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
         ./install-kyma-gardener.sh
     - name: Run End To End Test
-      timeout-minutes: 8
+      timeout-minutes: 10
       run: |
         cd fast-integration
         npm install
