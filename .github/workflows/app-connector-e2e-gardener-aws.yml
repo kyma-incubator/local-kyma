@@ -40,7 +40,7 @@ jobs:
         GARDEN_KUBECONFIG: ${{ secrets.GARDEN_KUBECONFIG_AWS }}
         SHOOT_NAME: ${{ github.event.inputs.shoot }}
       run: |
-        ./create-cluster-gardener.sh
+        ./create-cluster-gardener-aws.sh
         while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
     - name: Install Istio
       timeout-minutes: 5
