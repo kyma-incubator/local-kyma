@@ -22,7 +22,7 @@ on:
       keep:
         description: 'Keep cluster alive'
         required: true
-        default: false
+        default: 'false'
   schedule:
     - cron: '0 * * * *' # every hour
       
