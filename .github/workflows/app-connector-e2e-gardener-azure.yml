@@ -22,7 +22,7 @@ on:
       keep:
         description: 'Keep cluster alive'
         required: true
-        default: true
+        default: false
   schedule:
     - cron: '0 * * * *' # every hour
       
@@ -58,7 +58,7 @@ jobs:
       run: |
         cd fast-integration
         npm install
-        npm run-script test-commerce-mock
+        npm test
     - name: Uninstall Kyma
       if: ${{ always() }}
       run: |
