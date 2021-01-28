@@ -35,9 +35,6 @@ jobs:
       run: |
         ./create-cluster-k3s.sh
         while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
-    - name: Install Istio
-      run: |
-        ./install-istio.sh -f config-istio.yaml
     # - name: Setup tmate session
     #   uses: mxschmitt/action-tmate@v3
     - name: Install Kyma and run tests
