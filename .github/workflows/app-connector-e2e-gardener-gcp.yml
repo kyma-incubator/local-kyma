@@ -56,7 +56,7 @@ jobs:
     - name: Run End To End Test
       timeout-minutes: 10
       run: |
-        cd fast-integration
+        cd tests/fast-integration
         npm install
         npm test
     - name: Uninstall Kyma

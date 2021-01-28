@@ -54,6 +54,6 @@ jobs:
     #   uses: mxschmitt/action-tmate@v3
     - name: Run End To End Test
       run: |
-        cd fast-integration
+        cd tests/fast-integration
         npm install
         npm run-script test-commerce-mock

@@ -38,11 +38,11 @@ jobs:
     - name: Install Istio
       run: |
         ./install-istio.sh -f config-istio.yaml
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
     - name: Install Kyma and run tests
       run: |
         ./download-kyma-charts.sh aerfio/kyma installler-in-action
-        cd fast-integration
+        cd tests/fast-integration
         npm install
         DEBUG=true npm test
