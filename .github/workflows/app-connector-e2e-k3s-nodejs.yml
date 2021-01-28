@@ -1,4 +1,4 @@
-name: Tests on k3s
+name: Tests on k3s (nodejs installer)
 
 on:
   workflow_dispatch:
@@ -35,23 +35,11 @@ jobs:
       run: |
         ./create-cluster-k3s.sh
         while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
-    - name: Install Istio
-      run: |
-        ./install-istio.sh -f config-istio.yaml
-    - name: Install Kyma
-      env: 
-        SKIP_MODULES: monitoring,tracing,kiali,logging
-      run: |
-        SKIP=${{ github.event.inputs.skip }}
-        export SKIP_MODULES=${SKIP:-$SKIP_MODULES}
-        ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
-        ./install-kyma.sh
-        sudo cp kyma.crt /usr/local/share/ca-certificates
-        sudo update-ca-certificates
     # - name: Setup tmate session
     #   uses: mxschmitt/action-tmate@v3
-    - name: Run End To End Test
+    - name: Install Kyma and run tests
       run: |
+        ./download-kyma-charts.sh aerfio/kyma installler-in-action
         cd tests/fast-integration
         npm install
-        npm test
+        DEBUG=true npm test

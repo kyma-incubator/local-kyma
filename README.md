@@ -10,6 +10,7 @@ This repository contains scripts to start Kyma on local kubernetes cluster (k3s)
 - [helm 3](https://helm.sh/docs/intro/quickstart/#install-helm)
 - [k3d](https://github.com/rancher/k3d) - you can install it with the command: `brew install k3d` or `curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash`
 - [jq](https://stedolan.github.io/jq/)
+- Docker configured with 7GB RAM
 
 # Quick start
 
@@ -165,3 +166,12 @@ There is an A type DNS record pointing *.local.kyma.dev to 127.0.0.1. The k3s lo
 ## How local.kyma.dev URL work inside the cluster (from pod)?
 
 In the cluster network `*.local.kyma.dev` points directly to `istio-ingressgateway.istio-system.svc.cluster.local`. It is done by patching CoreDNS [config map](coredns-patch.tpl).
+
+--
+## How to check if my pull request to kyma works with k3s?
+
+You can pass arguments to the download kyma charts script:
+```
+./download-kyma-charts.sh pbochynski/kyma fast-integration
+```
+The example above uses fork of kyma project from user `pbochynski` and the `fast-integration` branch

@@ -26,7 +26,7 @@ k3d cluster create kyma \
     --network k3d-kyma \
     --volume $PWD/${REGISTRY_CONFIG}:/etc/rancher/k3s/registries.yaml \
     --wait \
-    --switch-context \
+    --kubeconfig-switch-context \
     --timeout 60s 
 
 echo "Cluster created in $(( $SECONDS/60 )) min $(( $SECONDS % 60 )) sec"
