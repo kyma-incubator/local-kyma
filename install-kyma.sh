@@ -31,7 +31,7 @@ function helm_install() {
   do
     ((retries--))
     if [[ $retries -lt 2 ]]; then
-      status=$(helm status $release -n $namespace -ojson | jq -r ".info.status") >/dev/null 2>/dev/null
+      status=$(helm status $release -n $namespace -ojson | jq -r ".info.status") >/dev/null 2>&1
     fi
     if [[ "$status" == "deployed" ]];
     then
