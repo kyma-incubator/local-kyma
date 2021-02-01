@@ -30,7 +30,7 @@ function helm_install() {
   while [ $retries -ge 0 ]
   do
     ((retries--))
-    status=$(helm status $release -n $namespace -ojson | jq -r ".info.status") >/dev/null 2>&1
+    status=$(helm status $release -n $namespace -ojson | jq -r ".info.status" 2>/dev/null) >/dev/null 2>&1
     if [[ "$status" == "deployed" ]];
     then
       break
