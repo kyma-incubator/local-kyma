@@ -22,7 +22,7 @@ cd local-kyma
 
 Download kyma charts to resources subfolder:
 ```
-./download-kyma-charts.sh
+./download-kyma-charts.sh 
 ```
 
 Start k3s cluster and Kyma:
@@ -150,7 +150,10 @@ Installation may fail, as the script is simple and doesn't have any retries impl
 ---
 ## Can I pick modules to install?
 
-Yes, just edit kyma-k3d.sh script and remove modules you don't need. 
+Yes, just edit kyma-k3d.sh script and remove modules you don't need. You can also set the environment variable `SKIP_MODULES` with comma separated list of kyma components that should not be installed. Example:
+```
+export SKIP_MODULES=monitoring,tracing,kiali,logging
+```
 
 ---
 ## Why kyma-installer is scaled down to 0 replicas?
