@@ -39,7 +39,7 @@ You can get the password for `admin@kyma.cx` in the future by running `kubectl g
 
 Your cluster is ready!
 
-![asciicast](local-kyma-k3d.gif)
+![asciicast](../media/kyma-k3d.gif?raw=true)
 
 When you are done you can clean up with this command:
 
