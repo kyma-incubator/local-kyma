@@ -58,7 +58,7 @@ jobs:
       run: |
         cd tests/fast-integration
         npm install
-        npm test
+        npx mocha -b --inline-diffs --check-leaks
     - name: Uninstall Kyma
       if: ${{ always() }}
       run: |
