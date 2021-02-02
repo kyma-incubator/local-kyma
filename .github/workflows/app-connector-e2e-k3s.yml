@@ -54,4 +54,5 @@ jobs:
       run: |
         cd tests/fast-integration
         npm install
-        npm test
+        npm run-script test-commerce-mock
+        npm run-script test-getting-started
