@@ -7,7 +7,7 @@ docker run -d \
 --restart=always \
 --name registry.localhost \
 -v $PWD/registry:/var/lib/registry \
-registry:2
+eu.gcr.io/kyma-project/test-infra/docker-registry-2:20200202
 
 echo "Starting cluster"
 minikube start --memory=6800m --kubernetes-version=1.18.9 --insecure-registry="registry.localhost:5000"

@@ -14,7 +14,7 @@ docker run -d \
   --name registry.localhost \
   --network k3d-kyma \
   -v $PWD/registry:/var/lib/registry \
-  registry:2
+  eu.gcr.io/kyma-project/test-infra/docker-registry-2:20200202
 
 # Create Kyma cluster
 k3d cluster create kyma \

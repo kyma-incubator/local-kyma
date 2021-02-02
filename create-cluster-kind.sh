@@ -40,7 +40,7 @@ docker run -d \
 --network=kind \
 --name registry.localhost \
 -v $PWD/registry:/var/lib/registry \
-registry:2
+eu.gcr.io/kyma-project/test-infra/docker-registry-2:20200202
 
 # tell https://tilt.dev to use the registry
 # https://docs.tilt.dev/choosing_clusters.html#discovering-the-registry
