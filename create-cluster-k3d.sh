@@ -4,6 +4,16 @@ set -o errexit
 SECONDS=0  
 REGISTRY_CONFIG=${1:-registries.yaml}
 
+# Check memory
+MEMORY=8192
+REQUIRED_MEMORY=$(expr $MEMORY \* 1024 \* 1024)
+DOCKER_MEMEORY=$(docker info --format '{{json .MemTotal}}')
+
+if (( $REQUIRED_MEMORY > $DOCKER_MEMEORY )); then
+    echo "Container memory in not sufficient. Please configure Docker to support containers with at least ${MEMORY} MB."
+    exit 1
+fi
+
 # Create docker network
 docker network create k3d-kyma || echo "k3d-kyma network already exists"
 
