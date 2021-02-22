@@ -66,9 +66,18 @@ jobs:
           echo "Keeping cluster alive"
           exit 0
         fi
-        echo "Deleting cluster ..."
+        echo "Uninstalling Kyma ..."
         cd tests/fast-integration
         ./kyma.js uninstall -v
+    - name: Delete cluster
+      if: ${{ always() }}
+      run: |
+        KEEP=${{ github.event.inputs.keep }}
+        if [[ $KEEP == "true" ]]; then
+          echo "Keeping cluster alive"
+          exit 0
+        fi
+        echo "Deleting cluster ..."
         export SHOOT_NAME=$(kubectl get cm shoot-info -n kube-system -ojsonpath='{.data.shootName}')
         kubectl --kubeconfig ./garden-kubeconfig.yaml annotate shoot $SHOOT_NAME confirmation.gardener.cloud/deletion=true
         kubectl --kubeconfig ./garden-kubeconfig.yaml delete shoot $SHOOT_NAME --force=true --wait=false
