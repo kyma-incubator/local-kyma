@@ -51,7 +51,7 @@ jobs:
       run: |
         cd tests/fast-integration
         npm install
-        ./kyma.js install -v
+        ./kyma.js install -s master -v
     - name: Run test
       timeout-minutes: 10
       run: |
