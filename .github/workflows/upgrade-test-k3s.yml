@@ -39,6 +39,7 @@ jobs:
     #   uses: mxschmitt/action-tmate@v3
     - name: Upgrade test
       run: |
+        ./download-kyma-charts.sh
         export DEBUG=true
         cd tests/fast-integration
         npm install
