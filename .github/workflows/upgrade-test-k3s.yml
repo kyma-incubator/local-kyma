@@ -39,7 +39,7 @@ jobs:
     #   uses: mxschmitt/action-tmate@v3
     - name: Upgrade test
       run: |
-        ./download-kyma-charts.sh
+        ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
         export DEBUG=true
         cd tests/fast-integration
         npm install
