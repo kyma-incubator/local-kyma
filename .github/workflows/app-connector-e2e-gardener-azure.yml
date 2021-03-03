@@ -15,10 +15,6 @@ on:
         description: 'Shoot cluster name'
         required: true
         default: 'ci'
-      skip:
-        description: 'Skip modules'
-        required: false
-        default: 'monitoring,tracing,kiali,logging,console,cluster-users,dex'
       keep:
         description: 'Keep cluster alive'
         required: true
@@ -42,24 +38,15 @@ jobs:
       run: |
         ./create-cluster-gardener-azure.sh
         while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
-    - name: Install Istio
-      timeout-minutes: 5
-      run: |
-        ./install-istio.sh -f config-istio.yaml
-    - name: Install Kyma
+    - name: Install and test Kyma
       timeout-minutes: 20
       run: |
         SKIP=${{ github.event.inputs.skip }}
         export SKIP_MODULES=${SKIP:-$SKIP_MODULES}
         ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
-        ./install-kyma-gardener.sh
-    - name: Run End To End Test
-      timeout-minutes: 10
-      run: |
         cd tests/fast-integration
         npm install
-        npm run-script test-commerce-mock
-        npm run-script test-getting-started
+        npm test
     - name: Uninstall Kyma
       if: ${{ always() }}
       run: |
