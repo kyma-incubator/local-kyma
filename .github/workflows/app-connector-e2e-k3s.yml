@@ -35,24 +35,17 @@ jobs:
       run: |
         ./create-cluster-k3s.sh
         while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
-    - name: Install Istio
-      run: |
-        ./install-istio.sh -f config-istio.yaml
-    - name: Install Kyma
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
+    - name: Install Kyma and Run Test
       env: 
         SKIP_MODULES: monitoring,tracing,kiali,logging
       run: |
         SKIP=${{ github.event.inputs.skip }}
         export SKIP_MODULES=${SKIP:-$SKIP_MODULES}
         ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
-        ./install-kyma.sh
-        sudo cp kyma.crt /usr/local/share/ca-certificates
-        sudo update-ca-certificates
-    # - name: Setup tmate session
-    #   uses: mxschmitt/action-tmate@v3
-    - name: Run End To End Test
-      run: |
         cd tests/fast-integration
         npm install
+        export DEBUG=true
+        ./kyma.js install --new-eventing 
         npm run-script test-commerce-mock
-        npm run-script test-getting-started

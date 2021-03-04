@@ -42,24 +42,17 @@ jobs:
       run: |
         ./create-cluster-gardener.sh
         while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
-    - name: Install Istio
-      timeout-minutes: 5
-      run: |
-        ./install-istio.sh -f config-istio.yaml
-    - name: Install Kyma
-      timeout-minutes: 15
+    - name: Install and test Kyma
+      timeout-minutes: 20
       run: |
         SKIP=${{ github.event.inputs.skip }}
         export SKIP_MODULES=${SKIP:-$SKIP_MODULES}
         ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
-        ./install-kyma-gardener.sh
-    - name: Run End To End Test
-      timeout-minutes: 10
-      run: |
         cd tests/fast-integration
         npm install
+        export DEBUG=true
+        ./kyma.js install --new-eventing 
         npm run-script test-commerce-mock
-        npm run-script test-getting-started
     - name: Uninstall Kyma
       if: ${{ always() }}
       run: |

@@ -46,7 +46,9 @@ jobs:
         ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
         cd tests/fast-integration
         npm install
-        npm test
+        export DEBUG=true
+        ./kyma.js install --new-eventing 
+        npm run-script test-commerce-mock
     - name: Uninstall Kyma
       if: ${{ always() }}
       run: |
