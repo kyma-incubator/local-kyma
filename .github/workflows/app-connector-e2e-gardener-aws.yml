@@ -42,22 +42,17 @@ jobs:
       run: |
         ./create-cluster-gardener-aws.sh
         while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
-    - name: Download Kyma
-      timeout-minutes: 2
+    - name: Install and test Kyma
+      timeout-minutes: 20
       run: |
-        ./download-kyma-charts.sh pbochynski/kyma kyma-js
-    - name: Install Kyma
-      timeout-minutes: 10
-      run: |
+        SKIP=${{ github.event.inputs.skip }}
+        export SKIP_MODULES=${SKIP:-$SKIP_MODULES}
+        ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
         cd tests/fast-integration
         npm install
-        ./kyma.js install -s master -v
-    - name: Run test
-      timeout-minutes: 10
-      run: |
-        cd tests/fast-integration
-        npx mocha test/2-commerce-mock.js
-        npx mocha test/3-getting-started-guides.js
+        export DEBUG=true
+        ./kyma.js install --new-eventing 
+        npm run-script test-commerce-mock
     - name: Uninstall Kyma
       if: ${{ always() }}
       run: |
