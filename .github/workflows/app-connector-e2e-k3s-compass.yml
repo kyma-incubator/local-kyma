@@ -1,0 +1,54 @@
+name: Tests on k3s with compass
+
+on:
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: 'Repository'
+        required: true
+        default: 'kyma-project/kyma'
+      branch:
+        description: 'Branch'
+        required: true
+        default: 'master'
+      skip:
+        description: 'Skip modules'
+        required: false
+        default: 'monitoring,tracing,kiali,logging,console,cluster-users,dex'
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+  schedule:
+    - cron: '0 * * * *' # every hour
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare docker registry and k3s
+      run: |
+        ./create-cluster-k3s.sh
+        while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
+    - name: Install Kyma and Run Test
+      env: 
+        SKIP_MODULES: monitoring,tracing,kiali,logging
+        COMPASS_HOST=${{ secrets.COMPASS_HOST }}
+        COMPASS_CLIENT_ID=${{ secrets.COMPASS_CLIENT_ID }}
+        COMPASS_CLIENT_SECRET=${{ secrets.COMPASS_CLIENT_SECRET }}
+        COMPASS_TENANT=${{ secrets.COMPASS_TENANT }}
+      run: |
+        SKIP=${{ github.event.inputs.skip }}
+        export SKIP_MODULES=${SKIP:-$SKIP_MODULES}
+        ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
+        cd tests/fast-integration
+        npm install
+        export DEBUG=true
+        npm run test-compass
