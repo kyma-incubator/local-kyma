@@ -40,10 +40,10 @@ jobs:
     - name: Install Kyma and Run Test
       env: 
         SKIP_MODULES: monitoring,tracing,kiali,logging
-        COMPASS_HOST=${{ secrets.COMPASS_HOST }}
-        COMPASS_CLIENT_ID=${{ secrets.COMPASS_CLIENT_ID }}
-        COMPASS_CLIENT_SECRET=${{ secrets.COMPASS_CLIENT_SECRET }}
-        COMPASS_TENANT=${{ secrets.COMPASS_TENANT }}
+        COMPASS_HOST: ${{ secrets.COMPASS_HOST }}
+        COMPASS_CLIENT_ID: ${{ secrets.COMPASS_CLIENT_ID }}
+        COMPASS_CLIENT_SECRET: ${{ secrets.COMPASS_CLIENT_SECRET }}
+        COMPASS_TENANT: ${{ secrets.COMPASS_TENANT }}
       run: |
         SKIP=${{ github.event.inputs.skip }}
         export SKIP_MODULES=${SKIP:-$SKIP_MODULES}
