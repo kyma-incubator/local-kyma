@@ -10,7 +10,7 @@ This repository contains scripts to start Kyma on local kubernetes cluster (k3s)
 - [helm 3](https://helm.sh/docs/intro/quickstart/#install-helm)
 - [k3d](https://github.com/rancher/k3d) - you can install it with the command: `brew install k3d` or `curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash`
 - [jq](https://stedolan.github.io/jq/)
-- Docker configured with 7GB RAM
+- Docker configured with 8.25GB RAM
 
 # Quick start
 
@@ -123,7 +123,7 @@ K3d is a docker wrapper around k3s (which runs on linux only) - it is more or le
 ----|:-------:|:--------:|:----:|
 K8s installation + startup time | ~ 25 sec  | ~ 90 sec | ~ 100 sec 
 Cluster startup time (second run) | ~ 15 sec  | ~ 30 sec | ~ 30 sec 
-Allocated memory (e2e scenario) | 4.2 GB | 6.6 GB | 6.8 GB 
+Allocated memory (e2e scenario) | 5.2 GB | 6.6 GB | 6.8 GB 
 Kyma installation time | ~ 3 min | ~ 5-6 min | ~ 4-5 min 
 LoadBalancer support | yes | yes/no (requires another process for minikube tunnel command) | no 
 Expose LB ports on host machine (use localhost) | yes | yes(mac) / no(linux)  | yes/no (extraPortMappings to service exposed with NodePort) 
