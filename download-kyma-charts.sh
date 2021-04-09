@@ -1,5 +1,5 @@
 REPO=${1:-kyma-project/kyma}
-BRANCH=${2:-master}
+BRANCH=${2:-main}
 curl -s https://codeload.github.com/${REPO}/zip/${BRANCH} --output kyma-src.zip
 unzip --qq -d ./tmp kyma-src.zip
 rm -rf ./resources
