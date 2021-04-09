@@ -10,7 +10,7 @@ on:
       branch:
         description: 'Branch'
         required: true
-        default: 'master'
+        default: 'main'
       shoot:
         description: 'Shoot cluster name'
         required: true
