@@ -31,12 +31,12 @@ jobs:
     timeout-minutes: 15
     steps:
     - uses: actions/checkout@v2
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3 
     - name: Prepare docker registry and k3s cluster
       run: |
         ./create-cluster-k3s.sh
-        while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3        
+        while [[ $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for cluster nodes to be ready"; sleep 2; done   
     - name: Upgrade test
       run: |
         ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
