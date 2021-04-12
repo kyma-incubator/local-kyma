@@ -31,8 +31,6 @@ jobs:
     timeout-minutes: 60
     steps:
     - uses: actions/checkout@v2
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3 
     - name: Prepare docker registry and k3s cluster
       run: |
         ./create-cluster-k3s.sh
@@ -44,4 +42,6 @@ jobs:
         cd tests/fast-integration
         npm install
         npx mocha upgrade-test/upgrade-test.js -b    
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3 
 
