@@ -37,23 +37,12 @@ jobs:
         GO111MODULE="on" go get sigs.k8s.io/kind@v0.9.0
         echo "Starting docker registry & kind cluster"
         ./create-cluster-kind.sh
-    - name: Install Istio
+    - name: Install Kyma and Run Test
       run: |
-        ./install-istio.sh -f config-istio-nodeport.yaml
-    - name: Install Kyma
-      env: 
-        SKIP_MODULES: monitoring,tracing,kiali,logging,console,cluster-users,dex,helm-broker
-      run: |
-        SKIP=${{ github.event.inputs.skip }}
         export SKIP_MODULES=${SKIP:-$SKIP_MODULES}
         ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
-        ./install-kyma.sh
-        sudo cp kyma.crt /usr/local/share/ca-certificates
-        sudo update-ca-certificates
-    # - name: Setup tmate session
-    #   uses: mxschmitt/action-tmate@v3
-    - name: Run End To End Test
-      run: |
         cd tests/fast-integration
         npm install
+        export DEBUG=true
+        ./kyma.js install --new-eventing 
         npm run-script test-commerce-mock

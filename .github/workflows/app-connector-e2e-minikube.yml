@@ -43,22 +43,12 @@ jobs:
     - name: Minikube tunnel
       run: |
         ./minikube-tunnel.sh
-    - name: Install Kyma
-      env: 
-        SKIP_MODULES: monitoring,tracing,kiali,logging,console,cluster-users,dex
+    - name: Install Kyma and Run Test
       run: |
-        SKIP=${{ github.event.inputs.skip }}
         export SKIP_MODULES=${SKIP:-$SKIP_MODULES}
         ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
-        IP=$(minikube ssh "grep host.minikube.internal /etc/hosts | cut -f1") 
-        export REGISTRY_IP=${IP//[$'\t\r\n ']}
-        ./install-kyma.sh
-        sudo cp kyma.crt /usr/local/share/ca-certificates
-        sudo update-ca-certificates
-    # - name: Setup tmate session
-    #   uses: mxschmitt/action-tmate@v3
-    - name: Run End To End Test
-      run: |
         cd tests/fast-integration
         npm install
+        export DEBUG=true
+        ./kyma.js install --new-eventing 
         npm run-script test-commerce-mock
