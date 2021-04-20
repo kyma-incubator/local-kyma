@@ -44,11 +44,14 @@ jobs:
       run: |
         ./minikube-tunnel.sh
     - name: Install Kyma and Run Test
+      env: 
+        SKIP_MODULES: monitoring,tracing,kiali,logging,dex,console,helm-broker
       run: |
+        SKIP=${{ github.event.inputs.skip }}
         export SKIP_MODULES=${SKIP:-$SKIP_MODULES}
         ./download-kyma-charts.sh ${{ github.event.inputs.repository }} ${{ github.event.inputs.branch }}
         cd tests/fast-integration
         npm install
         export DEBUG=true
-        ./kyma.js install --new-eventing 
+        ./kyma.js install --new-eventing --skip-components $SKIP_MODULES
         npm run-script test-commerce-mock
