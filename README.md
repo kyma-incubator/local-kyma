@@ -1,4 +1,8 @@
-![Tests on k3s](https://github.com/kyma-incubator/local-kyma-k3d/workflows/Tests%20on%20k3s/badge.svg) ![Tests on minikube](https://github.com/kyma-incubator/local-kyma-k3d/workflows/Tests%20on%20minikube/badge.svg) ![Tests on kind](https://github.com/kyma-incubator/local-kyma-k3d/workflows/Tests%20on%20kind/badge.svg) ![GCP](https://github.com/kyma-incubator/local-kyma/workflows/Gardener%20-%20GCP/badge.svg) ![AWS](https://github.com/kyma-incubator/local-kyma/workflows/Gardener%20-%20AWS/badge.svg) ![Azure](https://github.com/kyma-incubator/local-kyma/workflows/Gardener%20-%20Azure/badge.svg)
+
+# ARCHIVED ARCHIVED ARCHIVED ARCHIVED
+
+This repository is no longer maintained as the ideas introduced here are now adopted by main Kyma project. Check [Kyma CLI](https://github.com/kyma-project/cli) commands or [kyma.js](https://github.com/kyma-project/kyma/tree/main/tests/fast-integration).
+
 
 # Overview
 This repository contains scripts to start Kyma on local kubernetes cluster (k3s) in about 5 minutes! 
